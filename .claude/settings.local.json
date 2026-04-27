@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(export PATH=$PATH:/usr/local/go/bin)",
+      "Bash(go build:*)",
+      "Bash(python3 -m json.tool)",
+      "Bash(go vet:*)",
+      "Bash(timeout 300 /home/arbitrator/go/arb-bot/arb-bot)",
+      "Bash(ARB_RPC_URL=\"https://arb-mainnet.g.alchemy.com/v2/E0ASSpGbenMwsLFIfcr1-\" go run /tmp/probe_camelot.go)",
+      "Bash(curl -s https://api.eigenphi.io/mev/ethereum/tx/0x898e41e3c19f777f06bd57db44beff09b8c7094bc9074e07913dd47638207219)",
+      "Bash(curl -s \"https://raw.githubusercontent.com/OffchainLabs/nitro/v3.10.0-rc.6/cmd/nitro/init/init.go\")",
+      "Bash(sshpass -p 'Agadou11!' ssh -o StrictHostKeyChecking=no seb@209.172.45.63 ':*)",
+      "Bash(curl -s -X POST https://arb-mainnet.g.alchemy.com/v2/E0ASSpGbenMwsLFIfcr1- -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_call\",\"params\":[{\"to\":\"0xd04bc65744306a5c149414dd3cd5c984d9d3470d\",\"data\":\"0xc45a0155\"},\"latest\"]}')",
+      "Bash(python3 -c ':*)",
+      "Bash(ssh -i /tmp/aws.pem arbitrator@16.59.141.64 'python3 -c \":*)",
+      "Bash(export DUNE_API_KEY=GACvhTw0hGrMcBm1deF5dDXrU0gLMCQ9)",
+      "Bash(curl -s -X POST -H 'X-Dune-API-Key: GACvhTw0hGrMcBm1deF5dDXrU0gLMCQ9' -H 'Content-Type: application/json' https://api.dune.com/api/v1/query -d '{\"name\":\"arb-bot-arbitrum-mev-24h\",\"query_sql\":\"SELECT 1 AS test\",\"is_private\":false}')",
+      "Bash(curl -s -X POST -H 'X-Dune-API-Key: GACvhTw0hGrMcBm1deF5dDXrU0gLMCQ9' -H 'Content-Type: application/json' https://api.dune.com/api/v1/query/__TRACKED_VAR__/execute -d '{}')"
+    ]
+  }
+}

@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arb Bot Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--border:#30363d;--input:#21262d;
+  --text:#e6edf3;--dim:#8b949e;--green:#3fb950;--red:#f85149;
+  --yellow:#d29922;--blue:#58a6ff;--purple:#bc8cff;--orange:#f0883e;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;min-height:100vh}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Layout */
+header{background:var(--card);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px}
+header h1{font-size:16px;font-weight:600;letter-spacing:.02em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot.off{background:var(--red);box-shadow:0 0 6px var(--red)}
+#uptime{font-size:11px;color:var(--dim);margin-left:auto}
+.auto-refresh-label{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--dim);cursor:pointer;user-select:none}
+.auto-refresh-label input{accent-color:var(--blue);width:14px;height:14px;cursor:pointer}
+
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:0}
+nav button{background:none;border:none;color:var(--dim);padding:10px 16px;cursor:pointer;font-size:13px;border-bottom:2px solid transparent;transition:color .15s}
+nav button:hover{color:var(--text)}
+nav button.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+main{padding:20px;max-width:1400px;margin:0 auto}
+.tab{display:none}
+.tab.active{display:block}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.card-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.card-value{font-size:22px;font-weight:700}
+.card-sub{font-size:11px;color:var(--dim);margin-top:3px}
+
+/* Table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.table-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.table-header h3{font-size:13px;font-weight:600}
+.table-header .spacer{flex:1}
+table{width:100%;border-collapse:collapse}
+th{padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:7px 12px;border-bottom:1px solid #21262d;vertical-align:middle;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.03)}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-success{background:rgba(63,185,80,.15);color:var(--green)}
+.badge-reverted{background:rgba(248,81,73,.15);color:var(--red)}
+.badge-pending{background:rgba(210,153,34,.15);color:var(--yellow)}
+.badge-dropped{background:rgba(139,148,158,.15);color:var(--dim)}
+.badge-yes{background:rgba(63,185,80,.12);color:var(--green)}
+.badge-no{background:rgba(139,148,158,.1);color:var(--dim)}
+
+/* Controls */
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select,button.btn{background:var(--input);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer}
+select:focus,button.btn:focus{outline:1px solid var(--blue);border-color:var(--blue)}
+button.btn:hover{border-color:var(--blue)}
+button.btn-primary{background:rgba(88,166,255,.15);border-color:var(--blue);color:var(--blue)}
+.pagination{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--dim)}
+
+/* Forensics modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:10px;width:min(860px,96vw);max-height:88vh;overflow-y:auto;padding:24px;position:relative}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.modal h2{font-size:15px;font-weight:700;margin-bottom:16px}
+.modal h3{font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 8px}
+.frow{display:grid;grid-template-columns:180px 1fr;gap:4px 12px;align-items:baseline;margin-bottom:3px;font-size:12px}
+.frow .flabel{color:var(--dim);text-align:right}
+.frow .fval{font-family:'JetBrains Mono','Fira Code',monospace;word-break:break-all}
+.pool-table{width:100%;border-collapse:collapse;font-size:11px}
+.pool-table th{padding:5px 8px;text-align:left;color:var(--dim);border-bottom:1px solid var(--border);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.pool-table td{padding:5px 8px;border-bottom:1px solid #21262d;font-family:monospace}
+
+/* Token price tooltip anchor */
+.tok{cursor:default;border-bottom:1px dashed var(--dim);display:inline}
+
+/* Terminal */
+#log-box{background:#0a0c0f;border:1px solid var(--border);border-radius:8px;height:600px;overflow-y:auto;padding:12px;font-family:'JetBrains Mono','Fira Code','Cascadia Code',monospace;font-size:12px;line-height:1.55}
+.log-line{white-space:pre-wrap;word-break:break-all}
+.log-line.err{color:var(--red)}
+.log-line.warn{color:var(--yellow)}
+.log-line.info{color:#adbac7}
+.log-line.debug{color:#57606a}
+.log-line.exec{color:var(--green)}
+.log-controls{display:flex;gap:8px;align-items:center;padding:8px 0;flex-wrap:wrap}
+.log-status{font-size:11px;color:var(--dim);margin-left:auto}
+
+/* Processes tab */
+.proc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.proc-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.proc-card.running{border-left:3px solid var(--green)}
+.proc-card.stopped{border-left:3px solid var(--red)}
+.proc-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.proc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.proc-dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+.proc-dot.off{background:var(--red)}
+.proc-name{font-size:14px;font-weight:700}
+.proc-desc{font-size:11px;color:var(--dim);margin-left:auto}
+.proc-meta{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.proc-stat{background:var(--input);border-radius:5px;padding:5px 8px}
+.proc-stat-label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+.proc-stat-val{font-size:13px;font-weight:600;margin-top:1px}
+.proc-args{font-size:10px;color:var(--dim);font-family:'JetBrains Mono','Fira Code',monospace;word-break:break-all;line-height:1.5}
+
+/* Config tab */
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-bottom:14px}
+.cfg-section{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.cfg-section h3{padding:10px 14px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);border-bottom:1px solid var(--border);margin:0}
+.cfg-section.full{grid-column:1/-1}
+.cfg-row{display:flex;padding:6px 14px;border-bottom:1px solid #1c2128;align-items:baseline;gap:8px;min-height:28px}
+.cfg-row:last-child{border-bottom:none}
+.cfg-key{color:var(--dim);font-size:11px;flex-shrink:0;width:220px;white-space:nowrap}
+.cfg-val{font-size:12px;color:var(--text);word-break:break-all;font-family:'JetBrains Mono','Fira Code',monospace}
+.cfg-val.secret{color:var(--dim);font-style:italic}
+.cfg-val.addr{color:var(--blue)}
+.cfg-val.num{color:var(--purple)}
+.cfg-val.bool-t{color:var(--green)}
+.cfg-val.bool-f{color:var(--red)}
+details.cfg-collapse summary{padding:8px 14px;font-size:12px;cursor:pointer;color:var(--dim);list-style:none;border-top:1px solid var(--border)}
+details.cfg-collapse summary::before{content:'▶ ';font-size:10px}
+details.cfg-collapse[open] summary::before{content:'▼ '}
+.cfg-pool-row{display:grid;grid-template-columns:auto 1fr 1fr 1fr auto;gap:6px;padding:5px 14px;border-bottom:1px solid #1c2128;font-size:11px;align-items:center}
+.cfg-pool-row:last-child{border-bottom:none}
+.cfg-dex-tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(188,140,255,.15);color:var(--purple)}
+
+/* Empty state */
+.empty{padding:40px;text-align:center;color:var(--dim)}
+.loading{padding:40px;text-align:center;color:var(--dim);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Profit colors */
+.profit-pos{color:var(--green)}
+.profit-neg{color:var(--red)}
+.mono{font-family:'JetBrains Mono','Fira Code',monospace;font-size:11px}
+
+/* Health indicators */
+.health-group{display:flex;gap:10px;align-items:center;margin-left:8px}
+.health-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--dim)}
+.health-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.health-dot.ok{background:var(--green);box-shadow:0 0 4px var(--green)}
+.health-dot.warn{background:var(--yellow);box-shadow:0 0 4px var(--yellow)}
+.health-dot.err{background:var(--red);box-shadow:0 0 4px var(--red)}
+.health-dot.off{background:#555}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light-border.css">
+</head>
+<body>
+
+<header>
+  <div class="dot" id="bot-dot"></div>
+  <h1>ARB BOT</h1>
+  <span id="bot-status" style="font-size:12px;color:var(--dim)">loading...</span>
+  <label class="auto-refresh-label" title="Auto-refresh every 15s">
+    <input type="checkbox" id="auto-refresh-chk" checked onchange="autoRefresh=this.checked">
+    Auto-refresh
+  </label>
+  <div class="health-group" id="health-indicators">
+    <span class="health-item"><span class="health-dot off" id="h-tick"></span>Ticks <span id="h-tick-cov" style="color:var(--dim);font-variant-numeric:tabular-nums">—</span></span>
+    <span class="health-item"><span class="health-dot off" id="h-multicall"></span>Multicall</span>
+    <span class="health-item"><span class="health-dot off" id="h-swap"></span>Swaps</span>
+    <span class="health-item"><span class="health-dot off" id="h-cycle"></span>Cycles</span>
+  </div>
+  <span id="uptime"></span>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('overview',this)">Overview</button>
+  <button onclick="showTab('trades',this)">Our Trades</button>
+  <button onclick="showTab('observations',this)">Opportunities</button>
+  <button onclick="showTab('competitors',this)">Competitors</button>
+  <button onclick="showTab('logs',this)">Live Logs</button>
+  <button onclick="showTab('config',this)">Config</button>
+  <button onclick="showTab('processes',this)">Processes</button>
+  <button onclick="showTab('pools',this)">Pools</button>
+  <button onclick="showTab('db',this)">DB</button>
+</nav>
+
+<main>
+
+<!-- OVERVIEW -->
+<div class="tab active" id="tab-overview">
+  <div class="cards" id="stat-cards">
+    <div class="card"><div class="card-label">Our Trades</div><div class="card-value" id="s-total">—</div><div class="card-sub" id="s-24h-trades">last 24h: —</div></div>
+    <div class="card"><div class="card-label">Success Rate</div><div class="card-value" id="s-rate">—</div><div class="card-sub" id="s-breakdown">—</div></div>
+    <div class="card"><div class="card-label">Est. Profit (USD)</div><div class="card-value profit-pos" id="s-profit">—</div><div class="card-sub">successful trades only</div></div>
+    <div class="card"><div class="card-label">Opportunities</div><div class="card-value" id="s-obs">—</div><div class="card-sub" id="s-24h-obs">last 24h: —</div></div>
+    <div class="card"><div class="card-label">Exec Rate</div><div class="card-value" id="s-exec-rate">—</div><div class="card-sub">observations executed</div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>Recent Trades</h3></div>
+    <div id="overview-recent"></div>
+  </div>
+</div>
+
+<!-- OUR TRADES -->
+<div class="tab" id="tab-trades">
+  <div class="table-wrap">
+    <div class="table-header">
+      <h3>Our Trades</h3>
+      <span style="font-size:11px;color:var(--dim);margin-left:8px">from arb.db (our_trades)</span>
+      <div class="spacer"></div>
+      <div class="controls">
+        <select id="trades-status" onchange="tradesPage=0;loadTrades()">
+          <option value="">All statuses</option>
+          <option value="success">Success</option>
+          <option value="reverted">Reverted</option>
+          <option value="pending">Pending</option>
+          <option value="dropped">Dropped</option>
+        </select>
+        <div class="pagination">
+          <button class="btn" onclick="tradesPage=Math.max(0,tradesPage-1);loadTrades()">‹ Prev</button>
+          <span id="trades-page-info">page 1</span>
+          <button class="btn" onclick="tradesPage++;loadTrades()">Next ›</button>
+        </div>
+      </div>
+    </div>
+    <div id="trades-table-container"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
+<!-- OBSERVATIONS -->
+<div class="tab" id="tab-observations">
+  <div class="table-wrap">
+    <div class="table-header">
+      <h3>Detected Opportunities</h3>
+      <span style="font-size:11px;color:var(--dim);margin-left:8px">from arb.db (arb_observations)</span>
+      <div class="spacer"></div>
+      <div class="controls">
+        <select id="obs-filter" onchange="obsPage=0;loadObs()">
+          <option value="">All</option>
+          <option value="1">Executed</option>
+          <option value="0">Not executed</option>
+          <option value="rejected">Rejected (has reason)</option>
+        </select>
+        <div class="pagination">
+          <button class="btn" onclick="obsPage=Math.max(0,obsPage-1);loadObs()">‹ Prev</button>
+          <span id="obs-page-info">page 1</span>
+          <button class="btn" onclick="obsPage++;loadObs()">Next ›</button>
+        </div>
+      </div>
+    </div>
+    <div id="obs-table-container"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
+<!-- COMPETITORS -->
+<div class="tab" id="tab-competitors">
+  <div class="table-wrap">
+    <div class="table-header">
+      <h3>Competitor Arbs</h3>
+      <span style="font-size:11px;color:var(--dim);margin-left:8px">from arb.db (competitor_arbs)</span>
+      <div class="spacer"></div>
+      <div class="controls">
+        <select id="comp-profit" onchange="compPage=0;loadCompetitors()">
+          <option value="">All</option>
+          <option value="1">Profitable</option>
+          <option value="0">Not profitable</option>
+        </select>
+        <select id="comp-type" onchange="compPage=0;loadCompetitors()">
+          <option value="">All types</option>
+          <option value="cyclic">cyclic</option>
+          <option value="split_route">split_route</option>
+          <option value="unknown">unknown</option>
+        </select>
+        <div class="pagination">
+          <button class="btn" onclick="compPage=Math.max(0,compPage-1);loadCompetitors()">‹ Prev</button>
+          <span id="comp-page-info">page 1</span>
+          <button class="btn" onclick="compPage++;loadCompetitors()">Next ›</button>
+        </div>
+      </div>
+    </div>
+    <div id="comp-table-container"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
+<!-- LOGS -->
+<div class="tab" id="tab-logs">
+  <div class="log-controls">
+    <button class="btn btn-primary" id="btn-stream" onclick="toggleStream()">⏸ Pause stream</button>
+    <button class="btn" onclick="clearLog()">Clear</button>
+    <button class="btn" onclick="reloadLog()">Reload history</button>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim)">
+      <input type="checkbox" id="chk-scroll" checked onchange="autoScroll=this.checked"> Auto-scroll
+    </label>
+    <span class="log-status" id="log-status">connecting…</span>
+  </div>
+  <div id="log-box"></div>
+</div>
+
+<!-- PROCESSES -->
+<div class="tab" id="tab-processes">
+  <div id="processes-container"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- POOLS -->
+<div class="tab" id="tab-pools">
+  <div class="table-wrap">
+    <div class="table-header">
+      <h3>Pools</h3>
+      <div class="spacer"></div>
+      <input id="pools-search" type="text" placeholder="search symbol or address…" style="background:var(--input);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;width:200px" oninput="poolsSearchDebounce()">
+      <select id="pools-dex" onchange="pools_page=0;loadPools()"><option value="">All DEXes</option></select>
+      <select id="pools-sort" onchange="pools_page=0;loadPools()">
+        <option value="tvl_usd">TVL ↓</option>
+        <option value="volume_24h_usd">Volume 24h ↓</option>
+        <option value="last_updated">Last update ↓</option>
+        <option value="first_seen">First seen ↓</option>
+        <option value="fee_bps">Fee ↓</option>
+      </select>
+      <div class="pagination">
+        <button class="btn" onclick="pools_page=Math.max(0,pools_page-1);loadPools()">‹ Prev</button>
+        <span id="pools-page-info">page 1</span>
+        <button class="btn" onclick="pools_page++;loadPools()">Next ›</button>
+      </div>
+    </div>
+    <div id="pools-container"><div class="loading">Loading…</div></div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="tab" id="tab-config">
+  <div id="config-container"><div class="loading">Loading…</div></div>
+</div>
+
+<!-- DB BROWSER -->
+<div class="tab" id="tab-db">
+  <div class="table-wrap" style="margin-bottom:12px">
+    <div class="table-header" style="flex-wrap:wrap;gap:6px">
+      <h3>SQL Query</h3>
+      <div class="spacer"></div>
+      <span style="font-size:11px;color:var(--dim)">Quick:</span>
+      <button class="btn" onclick="dbQuick('SELECT * FROM our_trades ORDER BY submitted_at DESC LIMIT 100')">our_trades</button>
+      <button class="btn" onclick="dbQuick('SELECT * FROM arb_observations ORDER BY observed_at DESC LIMIT 100')">arb_observations</button>
+      <button class="btn" onclick="dbQuick('SELECT * FROM competitor_arbs ORDER BY seen_at DESC LIMIT 100')">competitor_arbs</button>
+      <button class="btn" onclick="dbQuick('SELECT * FROM tokens LIMIT 100')">tokens</button>
+      <button class="btn" onclick="dbQuick('SELECT * FROM pools LIMIT 100')">pools</button>
+    </div>
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border)">
+      <textarea id="db-sql" rows="4" style="width:100%;background:var(--input);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:6px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:12px;resize:vertical" placeholder="SELECT * FROM arb_observations LIMIT 10"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+        <button class="btn btn-primary" onclick="dbRun()">Run ▶</button>
+        <span id="db-status" style="font-size:11px;color:var(--dim)"></span>
+      </div>
+    </div>
+  </div>
+  <div id="db-result"></div>
+</div>
+
+</main>
+
+<!-- FORENSICS MODAL -->
+<div class="modal-backdrop" id="forensics-backdrop" style="display:none" onclick="if(event.target===this)closeForensics()">
+  <div class="modal" id="forensics-modal">
+    <button class="modal-close" onclick="closeForensics()">×</button>
+    <div id="forensics-content"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://unpkg.com/tippy.js@6/dist/tippy.umd.min.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let tradesPage = 0, obsPage = 0, compPage = 0;
+const PAGE = 50;
+let autoScroll = true;
+let evtSource = null;
+let streamActive = false;
+let refreshTimer = null;
+let activeTab = 'overview';
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  activeTab = name;
+  if (name === 'logs' && !streamActive) startStream();
+  if (name === 'trades') loadTrades();
+  if (name === 'observations') loadObs();
+  if (name === 'competitors') loadCompetitors();
+  if (name === 'config') loadConfig();
+  if (name === 'processes') loadProcesses();
+  if (name === 'pools') loadPools();
+  if (name === 'db') document.getElementById('db-sql').focus();
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function ts(unix) {
+  if (!unix) return '—';
+  const d = new Date(unix * 1000);
+  return d.toLocaleString('en-CA', {hour12:false}).replace(',','');
+}
+function shortHash(h) {
+  if (!h) return '—';
+  return `<a href="https://arbiscan.io/tx/${h}" target="_blank">${h.slice(0,6)}…${h.slice(-4)}</a>`;
+}
+function shortAddr(a) {
+  if (!a) return '—';
+  return `<a href="https://arbiscan.io/address/${a}" target="_blank">${a.slice(0,6)}…${a.slice(-4)}</a>`;
+}
+function usd(v) {
+  if (v == null) return '—';
+  const cls = v >= 0 ? 'profit-pos' : 'profit-neg';
+  return `<span class="${cls}">$${v.toFixed(2)}</span>`;
+}
+function pct(v) {
+  if (v == null) return '—';
+  return `<span class="${v >= 0 ? 'profit-pos' : 'profit-neg'}">${v.toFixed(3)}%</span>`;
+}
+function statusBadge(s, id) {
+  const map = {success:'badge-success',reverted:'badge-reverted',pending:'badge-pending',dropped:'badge-dropped'};
+  return `<span class="badge ${map[s]||'badge-dropped'}" style="cursor:pointer" onclick="openForensics(${id})">${s}</span>`;
+}
+// ── Token price tooltips ──────────────────────────────────────────────────────
+
+// Normalise hop_prices_json to a lowercase-symbol → price map.
+// Observations: already symbol-keyed {"weth":2050}
+// our_trades (resolved server-side): already symbol-keyed {"weth":2050}
+// Competitors (raw): address-keyed; resolve via hops_json symbol fields.
+function buildSymbolPrices(hopPricesJSON, hopsJSON) {
+  let prices = {};
+  try { prices = JSON.parse(hopPricesJSON || '{}'); } catch(e) {}
+  const keys = Object.keys(prices);
+  if (!keys.length) return {};
+  if (keys[0].startsWith('0x')) {
+    // address-keyed: resolve using hops_json
+    let hops = [];
+    try { hops = JSON.parse(hopsJSON || '[]'); } catch(e) {}
+    const addrToSym = {};
+    for (const h of hops) {
+      if (h.token_in  && h.symbol_in)  addrToSym[h.token_in.toLowerCase()]  = h.symbol_in;
+      if (h.token_out && h.symbol_out) addrToSym[h.token_out.toLowerCase()] = h.symbol_out;
+    }
+    const out = {};
+    for (const [addr, p] of Object.entries(prices)) {
+      const sym = addrToSym[addr.toLowerCase()];
+      if (sym) out[sym.toLowerCase()] = p;
+    }
+    return out;
+  }
+  return prices;
+}
+
+function fmtPrice(p) {
+  if (p == null) return null;
+  if (p >= 1000) return '$' + p.toLocaleString('en', {maximumFractionDigits: 0});
+  if (p >= 1)    return '$' + p.toFixed(2);
+  return '$' + p.toPrecision(3);
+}
+
+// Wrap a token symbol in a tippy-enabled span if a price is known.
+function tokSpan(sym, prices) {
+  const p = prices[sym.toLowerCase()];
+  if (p != null) return `<span class="tok" data-tippy-content="${sym} ≈ ${fmtPrice(p)}">${sym}</span>`;
+  return sym;
+}
+
+function tokens(t, hopPricesJSON, hopsJSON) {
+  if (!t) return '—';
+  const prices = buildSymbolPrices(hopPricesJSON, hopsJSON);
+  return t.split(',').map(s => tokSpan(s.trim(), prices)).join('<br>');
+}
+
+// Competitor path_str: "USDC→[PancakeV3]WETH→[UniV3]ARB"
+// Wrap bare token words (not inside brackets) with tooltips.
+// Build token list from hops_json (one per line), with price tooltips.
+// Falls back to stripping [DEX] from path_str.
+function compPath(pathStr, hopPricesJSON, hopsJSON) {
+  if (!pathStr) return '—';
+  const prices = buildSymbolPrices(hopPricesJSON, hopsJSON);
+  let hops = [];
+  try { hops = JSON.parse(hopsJSON || '[]'); } catch(e) {}
+  if (hops.length) {
+    // First token (token_in of hop 0) + each token_out stacked vertically
+    const syms = [hops[0].symbol_in, ...hops.map(h => h.symbol_out)];
+    return syms.map(s => tokSpan(s, prices)).join('<br>');
+  }
+  // Fallback: strip [DEX] blocks, split on →
+  const stripped = pathStr.replace(/\[([^\[\]]*(\([^)]*\))?[^\[\]]*)\]/g, '');
+  return stripped.split('→').map(s => tokSpan(s.trim(), prices)).join('<br>');
+}
+
+// Build per-hop DEX list from hops_json (preserves order and repetition).
+// Falls back to the comma-separated dexes string if hops_json is unavailable.
+function compDexes(hopsJSON, dexesFallback) {
+  let hops = [];
+  try { hops = JSON.parse(hopsJSON || '[]'); } catch(e) {}
+  if (hops.length) {
+    return hops.map(h => `<span style="color:var(--purple)">${h.dex || '?'}</span>`).join('<br>');
+  }
+  return dexes(dexesFallback);
+}
+
+// Call after any innerHTML update that may contain .tok elements.
+function bindTippy() {
+  if (typeof tippy === 'undefined') return;
+  tippy('.tok', {
+    theme: 'light-border',
+    placement: 'top',
+    animation: 'shift-away',
+    arrow: true,
+    delay: [100, 0],
+    allowHTML: false,
+    // avoid re-initialising already-bound elements
+    onCreate(instance) { instance.reference._tippy_bound = true; },
+  });
+}
+function dexes(d) {
+  return d ? d.split(',').map(x => `<span style="color:var(--purple)">${x.trim()}</span>`).join('<br>') : '—';
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const s = await fetch('/api/stats').then(r => r.json());
+    document.getElementById('s-total').textContent = s.total_trades;
+    document.getElementById('s-24h-trades').textContent = `last 24h: ${s.last_24h_trades}`;
+    const rate = s.total_trades > 0 ? (s.success_trades / s.total_trades * 100).toFixed(1) + '%' : '—';
+    document.getElementById('s-rate').textContent = rate;
+    document.getElementById('s-breakdown').textContent = `✓${s.success_trades} ✗${s.reverted_trades} ⏳${s.pending_trades}`;
+    document.getElementById('s-profit').textContent = '$' + s.total_profit_usd.toFixed(2);
+    document.getElementById('s-obs').textContent = s.total_observations.toLocaleString();
+    document.getElementById('s-24h-obs').textContent = `last 24h: ${s.last_24h_observations.toLocaleString()}`;
+    const execRate = s.total_observations > 0 ? (s.executed_observations / s.total_observations * 100).toFixed(2) + '%' : '—';
+    document.getElementById('s-exec-rate').textContent = execRate;
+    // Update dot
+    document.getElementById('bot-dot').className = 'dot';
+    document.getElementById('bot-status').textContent = s.last_24h_observations > 0 ? 'running' : 'idle / no data';
+    if (s.last_24h_observations === 0) document.getElementById('bot-dot').className = 'dot off';
+  } catch(e) {
+    document.getElementById('bot-dot').className = 'dot off';
+    document.getElementById('bot-status').textContent = 'db error';
+  }
+}
+
+async function loadOverviewRecent() {
+  const data = await fetch('/api/trades?limit=10').then(r => r.json()).catch(() => []);
+  document.getElementById('overview-recent').innerHTML = renderTradesTable(data);
+  bindTippy();
+}
+
+// ── Our Trades ────────────────────────────────────────────────────────────────
+async function loadTrades() {
+  const status = document.getElementById('trades-status').value;
+  const url = `/api/trades?limit=${PAGE}&offset=${tradesPage*PAGE}${status?'&status='+status:''}`;
+  const data = await fetch(url).then(r => r.json()).catch(() => []);
+  document.getElementById('trades-table-container').innerHTML = renderTradesTable(data);
+  document.getElementById('trades-page-info').textContent = `page ${tradesPage+1}`;
+  bindTippy();
+}
+
+function renderTradesTable(data) {
+  if (!data || data.length === 0) return '<div class="empty">No trades found</div>';
+  return `<div class="table-scroll"><table>
+    <thead><tr>
+      <th>ID</th><th>Time</th><th>TX</th><th>Status</th><th>Path</th><th>DEXes</th>
+      <th>Est. Profit</th><th>Block</th><th>Pos</th><th>Gas</th><th>Competitors</th>
+    </tr></thead>
+    <tbody>${data.map(t => `<tr>
+      <td class="mono" style="color:var(--dim)">${t.id}</td>
+      <td class="mono">${ts(t.submitted_at)}</td>
+      <td>${shortHash(t.tx_hash)}</td>
+      <td>${statusBadge(t.status, t.id)}</td>
+      <td style="white-space:normal;line-height:1.8">${tokens(t.tokens, t.hop_prices_json, '')}</td>
+      <td style="white-space:normal;line-height:1.8">${dexes(t.dexes)}</td>
+      <td>${usd(t.profit_usd_est)}</td>
+      <td class="mono">${t.block_number||'—'}</td>
+      <td class="mono">${t.block_position != null ? '#'+t.block_position : '—'}</td>
+      <td class="mono">${t.gas_used ? t.gas_used.toLocaleString() : '—'}</td>
+      <td style="color:${t.competitors_before>0?'var(--red)':'var(--dim)'}">${t.competitors_before != null ? t.competitors_before : '—'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── Observations ──────────────────────────────────────────────────────────────
+async function loadObs() {
+  const filter = document.getElementById('obs-filter').value;
+  let params = `limit=${PAGE}&offset=${obsPage*PAGE}`;
+  if (filter === '0' || filter === '1') params += `&executed=${filter}`;
+  else if (filter === 'rejected') params += `&rejected=1`;
+  const url = `/api/observations?${params}`;
+  const data = await fetch(url).then(r => r.json()).catch(() => []);
+  document.getElementById('obs-table-container').innerHTML = renderObsTable(data);
+  document.getElementById('obs-page-info').textContent = `page ${obsPage+1}`;
+  bindTippy();
+}
+
+function renderObsTable(data) {
+  if (!data || data.length === 0) return '<div class="empty">No observations found</div>';
+  return `<div class="table-scroll"><table>
+    <thead><tr>
+      <th>ID</th><th>Time</th><th>Type</th><th>Path</th><th>DEXes</th><th>Profit %</th><th>Profit USD</th><th>Hops</th><th>Executed</th><th>TX</th><th>Reject Reason</th>
+    </tr></thead>
+    <tbody>${data.map(o => `<tr>
+      <td class="mono" style="color:var(--dim)">${o.id}</td>
+      <td class="mono">${ts(o.observed_at)}</td>
+      <td>${o.arb_type ? `<span class="badge badge-no" style="color:var(--orange)">${o.arb_type}</span>` : '<span style="color:var(--dim)">—</span>'}</td>
+      <td style="white-space:normal;line-height:1.8">${tokens(o.tokens, o.hop_prices_json, '')}</td>
+      <td style="white-space:normal;line-height:1.8">${dexes(o.dexes)}</td>
+      <td>${pct(o.profit_pct)}</td>
+      <td>${usd(o.profit_usd)}</td>
+      <td>${o.hops}</td>
+      <td>${o.executed ? '<span class="badge badge-yes">yes</span>' : '<span class="badge badge-no">no</span>'}</td>
+      <td>${shortHash(o.tx_hash)}</td>
+      <td style="color:var(--yellow);white-space:normal;word-break:break-word">${o.reject_reason || '<span style="color:var(--dim)">—</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── Competitors ───────────────────────────────────────────────────────────────
+async function loadCompetitors() {
+  const type = document.getElementById('comp-type').value;
+  const profit = document.getElementById('comp-profit').value;
+  const url = `/api/competitors?limit=${PAGE}&offset=${compPage*PAGE}${type?'&arb_type='+type:''}${profit!==''?'&profitable='+profit:''}`;
+  const data = await fetch(url).then(r => r.json()).catch(() => []);
+  document.getElementById('comp-table-container').innerHTML = renderCompTable(data);
+  document.getElementById('comp-page-info').textContent = `page ${compPage+1}`;
+  bindTippy();
+}
+
+function renderCompTable(data) {
+  if (!data || data.length === 0) return '<div class="empty">No competitor data — is arbscan running?</div>';
+  return `<div class="table-scroll"><table>
+    <thead><tr>
+      <th>ID</th><th>Time</th><th>Type</th><th>Path</th><th>DEXes</th><th>Flash Loan</th>
+      <th>Gross USD</th><th>Net USD</th><th>Gas</th><th>Hops</th><th>TX</th><th>Sender</th>
+    </tr></thead>
+    <tbody>${data.map(c => `<tr>
+      <td class="mono" style="color:var(--dim)">${c.id}</td>
+      <td class="mono">${ts(c.seen_at)}</td>
+      <td>${c.arb_type ? `<span class="badge badge-no" style="color:var(--orange)">${c.arb_type}</span>` : '<span style="color:var(--dim)">—</span>'}</td>
+      <td style="white-space:normal;line-height:1.8">${compPath(c.path_str, c.hop_prices_json, c.hops_json)}</td>
+      <td style="white-space:normal;line-height:1.8">${compDexes(c.hops_json, c.dexes)}</td>
+      <td style="color:var(--blue)">${c.flash_loan_source||'—'} ${c.borrow_symbol?'('+c.borrow_symbol+')':''}</td>
+      <td>${usd(c.profit_usd)}</td>
+      <td>${usd(c.net_profit_usd)}</td>
+      <td class="mono">${c.gas_used ? c.gas_used.toLocaleString() : '—'}</td>
+      <td>${c.hop_count||'—'}</td>
+      <td>${shortHash(c.tx_hash)}</td>
+      <td>${shortAddr(c.sender)}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── Logs ──────────────────────────────────────────────────────────────────────
+async function reloadLog() {
+  const box = document.getElementById('log-box');
+  box.innerHTML = '<div class="loading">Loading log history…</div>';
+  try {
+    const text = await fetch('/api/logs?lines=400').then(r => r.text());
+    box.innerHTML = '';
+    text.split('\n').forEach(line => appendLine(line));
+    if (autoScroll) box.scrollTop = box.scrollHeight;
+  } catch(e) {
+    box.innerHTML = '<div class="empty">Failed to load logs</div>';
+  }
+}
+
+function appendLine(line) {
+  if (!line.trim()) return;
+  const box = document.getElementById('log-box');
+  const div = document.createElement('div');
+  div.className = 'log-line ' + classifyLine(line);
+  div.textContent = line;
+  box.appendChild(div);
+  // Keep max 2000 lines
+  while (box.children.length > 2000) box.removeChild(box.firstChild);
+  if (autoScroll) box.scrollTop = box.scrollHeight;
+}
+
+function classifyLine(line) {
+  const l = line.toLowerCase();
+  if (l.includes('error') || l.includes('fatal') || l.includes('panic')) return 'err';
+  if (l.includes('warn')) return 'warn';
+  if (l.includes('execut') || l.includes('submitted') || l.includes('profit')) return 'exec';
+  if (l.includes('debug') || l.includes('trace')) return 'debug';
+  return 'info';
+}
+
+function clearLog() {
+  document.getElementById('log-box').innerHTML = '';
+}
+
+function startStream() {
+  if (evtSource) { evtSource.close(); evtSource = null; }
+  document.getElementById('log-status').textContent = 'connecting…';
+  evtSource = new EventSource('/api/logs/stream');
+  streamActive = true;
+  document.getElementById('btn-stream').textContent = '⏸ Pause stream';
+
+  evtSource.onopen = () => {
+    document.getElementById('log-status').textContent = '● live';
+    document.getElementById('log-status').style.color = 'var(--green)';
+  };
+  evtSource.onmessage = (e) => appendLine(e.data);
+  evtSource.onerror = () => {
+    document.getElementById('log-status').textContent = '○ disconnected';
+    document.getElementById('log-status').style.color = 'var(--red)';
+    streamActive = false;
+    document.getElementById('btn-stream').textContent = '▶ Start stream';
+  };
+}
+
+function toggleStream() {
+  if (streamActive) {
+    evtSource && evtSource.close();
+    evtSource = null;
+    streamActive = false;
+    document.getElementById('btn-stream').textContent = '▶ Start stream';
+    document.getElementById('log-status').textContent = '○ paused';
+    document.getElementById('log-status').style.color = 'var(--dim)';
+  } else {
+    startStream();
+  }
+}
+
+// Prevent auto-scroll when user scrolls up
+document.addEventListener('DOMContentLoaded', () => {
+  const box = document.getElementById('log-box');
+  box.addEventListener('scroll', () => {
+    const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
+    if (!atBottom) {
+      autoScroll = false;
+      document.getElementById('chk-scroll').checked = false;
+    }
+  });
+});
+
+// ── Processes ─────────────────────────────────────────────────────────────────
+
+async function loadProcesses() {
+  const data = await fetch('/api/processes').then(r => r.json()).catch(() => []);
+  document.getElementById('processes-container').innerHTML = renderProcesses(data);
+}
+
+function renderProcesses(data) {
+  if (!data || data.length === 0) return '<div class="empty">No process data</div>';
+  return `<div class="proc-grid">${data.map(p => {
+    const cls = p.running ? 'running' : 'stopped';
+    const dotCls = p.running ? 'on' : 'off';
+    const status = p.running ? 'Running' : 'Stopped';
+    const statusColor = p.running ? 'var(--green)' : 'var(--red)';
+    return `<div class="proc-card ${cls}">
+      <div class="proc-header">
+        <div class="proc-dot ${dotCls}"></div>
+        <span class="proc-name">${p.name}</span>
+        <span class="proc-desc">${p.desc}</span>
+      </div>
+      <div class="proc-meta">
+        <div class="proc-stat">
+          <div class="proc-stat-label">Status</div>
+          <div class="proc-stat-val" style="color:${statusColor}">${status}</div>
+        </div>
+        <div class="proc-stat">
+          <div class="proc-stat-label">PID</div>
+          <div class="proc-stat-val">${p.pid || '—'}</div>
+        </div>
+        <div class="proc-stat">
+          <div class="proc-stat-label">CPU</div>
+          <div class="proc-stat-val">${p.cpu || '—'}</div>
+        </div>
+        <div class="proc-stat">
+          <div class="proc-stat-label">Mem</div>
+          <div class="proc-stat-val">${p.mem || '—'}</div>
+        </div>
+        <div class="proc-stat" style="grid-column:1/3">
+          <div class="proc-stat-label">Uptime</div>
+          <div class="proc-stat-val">${p.uptime || '—'}</div>
+        </div>
+      </div>
+      ${p.args ? `<div class="proc-args">${p.args}</div>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── Config ────────────────────────────────────────────────────────────────────
+
+let configLoaded = false;
+async function loadConfig() {
+  if (configLoaded) return;
+  const cfg = await fetch('/api/config').then(r => r.json()).catch(() => null);
+  if (!cfg) { document.getElementById('config-container').innerHTML = '<div class="empty">Failed to load config</div>'; return; }
+  configLoaded = true;
+  document.getElementById('config-container').innerHTML = renderConfig(cfg);
+}
+
+function cfgRow(key, val) {
+  let cls = 'cfg-val';
+  let display = val;
+  if (val === null || val === undefined || val === '') { display = '—'; cls += ' secret'; }
+  else if (typeof val === 'boolean') { cls += val ? ' bool-t' : ' bool-f'; display = String(val); }
+  else if (typeof val === 'number') { cls += ' num'; }
+  else if (typeof val === 'string') {
+    if (/^0x[0-9a-fA-F]{10,}$/.test(val)) cls += ' addr';
+    else if (val.includes('PRIVKEY') || key.toLowerCase().includes('token') || key.toLowerCase().includes('secret') || key.toLowerCase().includes('key')) {
+      display = '••••••••'; cls += ' secret';
+    }
+  }
+  return `<div class="cfg-row"><span class="cfg-key">${key}</span><span class="${cls}">${display}</span></div>`;
+}
+
+function renderConfig(cfg) {
+  const s = cfg.strategy || {};
+  const t = cfg.trading || {};
+  const m = cfg.monitoring || {};
+  const p = cfg.pools || {};
+  const sg = p.subgraph || {};
+  const seeds = p.seeds || [];
+  const ym = cfg.yield_monitoring || {};
+  const ymPairs = ym.pairs || [];
+  const factories = cfg.factories || {};
+  const tokens = cfg.tokens || [];
+
+  // mask secrets helper
+  const mask = v => (v && v.length > 8) ? v.slice(0,6)+'…'+v.slice(-4) : (v || '—');
+
+  let html = '<div class="cfg-grid">';
+
+  // ── RPC & Wallet
+  html += `<div class="cfg-section">
+    <h3>Network</h3>
+    ${cfgRow('Arbitrum RPC', mask(cfg.arbitrum_rpc))}
+    ${cfgRow('L1 RPC', mask(cfg.l1_rpc))}
+    ${cfgRow('DB Path', cfg.db_path)}
+  </div>`;
+
+  html += `<div class="cfg-section">
+    <h3>Wallet</h3>
+    ${cfgRow('Address', (cfg.wallet||{}).address)}
+    ${cfgRow('Private Key', '••••••••')}
+  </div>`;
+
+  // ── Trading
+  html += `<div class="cfg-section">
+    <h3>Trading</h3>
+    ${cfgRow('Min Profit USD', t.min_profit_usd)}
+    ${cfgRow('Flash Loan Cap USD', (t.flash_loan_amount_usd||0).toLocaleString())}
+    ${cfgRow('Executor Contract', t.executor_contract)}
+    ${cfgRow('Sequencer RPC', t.sequencer_rpc)}
+    ${cfgRow('Balancer Vault', t.balancer_vault)}
+  </div>`;
+
+  // ── Strategy
+  html += `<div class="cfg-section">
+    <h3>Strategy</h3>
+    ${cfgRow('Min Price Delta', s.min_price_delta)}
+    ${cfgRow('LP Sanity Cap', s.lp_sanity_cap)}
+    ${cfgRow('Max Profit Cap USD', s.max_profit_usd_cap)}
+    ${cfgRow('TVL Trade Cap Fraction', s.tvl_trade_cap_fraction)}
+    ${cfgRow('Submit Cooldown (s)', s.submit_cooldown_secs)}
+    ${cfgRow('Cycle Rebuild (s)', s.cycle_rebuild_secs)}
+    ${cfgRow('Max DEX per Dest', s.max_dex_per_dest)}
+    ${cfgRow('Max Edges per Node', s.max_edges_per_node)}
+    ${cfgRow('Pool Staleness (s)', s.pool_staleness_secs)}
+    ${cfgRow('Skip Sim Above USD', s.skip_sim_above_usd)}
+    ${cfgRow('Contract Min Profit Divisor', s.contract_min_profit_divisor)}
+    ${cfgRow('Competitor Watch Min Profit', s.competitor_watch_min_profit_usd)}
+    ${cfgRow('Arb Log Retention (h)', s.arb_log_retention_hours)}
+    ${cfgRow('Arb Log Max Rows', (s.arb_log_max_rows||0).toLocaleString())}
+  </div>`;
+
+  // ── Pool Filters
+  html += `<div class="cfg-section">
+    <h3>Pool Filters</h3>
+    ${cfgRow('Min TVL USD', p.min_tvl_usd)}
+    ${cfgRow('Min Volume 24h USD', p.min_volume_24h_usd)}
+    ${cfgRow('Prune TVL USD', p.prune_tvl_usd)}
+    ${cfgRow('Max Hops', p.max_hops)}
+    ${cfgRow('Max Pool TVL USD', p.max_pool_tvl_usd)}
+  </div>`;
+
+  // ── Subgraph
+  html += `<div class="cfg-section">
+    <h3>Subgraph</h3>
+    ${cfgRow('Enabled', sg.enabled)}
+    ${cfgRow('Min TVL USD', sg.min_tvl_usd)}
+    ${cfgRow('Limit per DEX', sg.limit_per_dex)}
+    ${cfgRow('Refresh (h)', sg.refresh_hours)}
+    ${cfgRow('API Key', sg.thegraph_api_key ? mask(sg.thegraph_api_key) : '—')}
+  </div>`;
+
+  // ── Monitoring
+  html += `<div class="cfg-section">
+    <h3>Monitoring</h3>
+    ${cfgRow('InfluxDB URL', m.influxdb_url)}
+    ${cfgRow('InfluxDB Token', m.influxdb_token ? '••••••••' : '(not set)')}
+    ${cfgRow('InfluxDB Org', m.influxdb_org)}
+    ${cfgRow('InfluxDB Bucket', m.influxdb_bucket)}
+    ${cfgRow('Telegram Token', m.telegram_token ? '••••••••' : '(not set)')}
+    ${cfgRow('Telegram Chat ID', m.telegram_chat_id || '(not set)')}
+  </div>`;
+
+  // ── Factories
+  html += `<div class="cfg-section">
+    <h3>DEX Factories</h3>
+    ${Object.entries(factories).map(([k,v]) => cfgRow(k, v)).join('')}
+  </div>`;
+
+  // ── Yield Monitoring
+  html += `<div class="cfg-section">
+    <h3>Yield Monitoring</h3>
+    ${cfgRow('Min Divergence (bps)', ym.min_divergence_bps)}
+    ${cfgRow('Min Profit USD', ym.min_profit_usd)}
+    ${ymPairs.map(p => cfgRow(p.protocol + ' ' + (p.wrapper_address||'').slice(0,10)+'…', `base=${p.base_address ? p.base_address.slice(0,10)+'…' : '?'} min=${p.min_divergence_bps||'—'}bps`)).join('')}
+  </div>`;
+
+  // ── Tokens
+  html += `<div class="cfg-section">
+    <h3>Tokens (${tokens.length})</h3>
+    ${tokens.map(t => cfgRow(t.symbol, `${t.address} (${t.decimals} dec)`)).join('')}
+  </div>`;
+
+  html += '</div>';
+
+  // ── Seed Pools (collapsible full-width)
+  html += `<div class="cfg-section full">
+    <h3>Seed Pools (${seeds.length})</h3>
+    <details class="cfg-collapse">
+      <summary>${seeds.length} pools — click to expand</summary>
+      ${seeds.map(pool => {
+        const tok0 = pool.token0 ? pool.token0.slice(0,8)+'…' : '?';
+        const tok1 = pool.token1 ? pool.token1.slice(0,8)+'…' : '?';
+        return `<div class="cfg-pool-row">
+          <span class="cfg-dex-tag">${pool.dex||'?'}</span>
+          <span class="cfg-val addr" title="${pool.address}">${pool.address ? pool.address.slice(0,10)+'…' : '?'}</span>
+          <span class="cfg-val" style="color:var(--dim)">${tok0} / ${tok1}</span>
+          <span class="cfg-val num">${pool.fee_bps != null ? pool.fee_bps+'bps' : '?'}</span>
+          <span class="cfg-val" style="color:var(--dim);font-size:10px">${pool.is_stable ? 'stable' : ''}</span>
+        </div>`;
+      }).join('')}
+    </details>
+  </div>`;
+
+  return html;
+}
+
+// ── Init & auto-refresh ───────────────────────────────────────────────────────
+function refresh() {
+  loadStats();
+  loadOverviewRecent();
+  loadHealth();
+}
+
+async function loadHealth() {
+  try {
+    const h = await fetch('/api/health').then(r => r.json());
+    if (h.error) { setHealthAll('off','—'); document.getElementById('h-tick-cov').textContent = '—'; return; }
+    const now = Math.floor(Date.now()/1000);
+    setHealthDot('h-tick',     now - h.tick_data_at,    30, 60);
+    setHealthDot('h-multicall',now - h.multicall_at,    15, 45);
+    setHealthDot('h-swap',     now - h.swap_event_at,   10, 30);
+    setHealthDot('h-cycle',    now - h.cycle_rebuild_at, 120, 300);
+    // Tick coverage: "X / Y" pools with tick data. Color amber when partial,
+    // red when zero, green when complete.
+    const cov = document.getElementById('h-tick-cov');
+    const have = h.ticked_pools_have || 0;
+    const total = h.ticked_pools_total || 0;
+    cov.textContent = `${have} / ${total}`;
+    if (total === 0)        cov.style.color = 'var(--dim)';
+    else if (have === 0)    cov.style.color = 'var(--red)';
+    else if (have < total)  cov.style.color = 'var(--yellow)';
+    else                    cov.style.color = 'var(--green)';
+    cov.title = total > 0 ? `${(100*have/total).toFixed(0)}% of tracked V3/V4 cycle pools have tick data` : 'no pools tracked yet';
+  } catch(e) { setHealthAll('off'); }
+}
+
+function setHealthDot(id, ageSec, warnThresh, errThresh) {
+  const el = document.getElementById(id);
+  const label = el.parentElement;
+  let cls = 'ok';
+  if (ageSec > errThresh) cls = 'err';
+  else if (ageSec > warnThresh) cls = 'warn';
+  el.className = 'health-dot ' + cls;
+  label.title = ageSec + 's ago';
+}
+
+function setHealthAll(cls) {
+  ['h-tick','h-multicall','h-swap','h-cycle'].forEach(id => {
+    document.getElementById(id).className = 'health-dot ' + cls;
+  });
+}
+
+// Initial load
+refresh();
+reloadLog();
+
+let autoRefresh = true;
+
+// Refresh stats + active tab every 15s
+refreshTimer = setInterval(() => {
+  if (!autoRefresh) return;
+  refresh();
+  if (activeTab === 'trades') loadTrades();
+  else if (activeTab === 'observations') loadObs();
+  else if (activeTab === 'competitors') loadCompetitors();
+  else if (activeTab === 'processes') loadProcesses();
+  else if (activeTab === 'pools') loadPools();
+}, 15000);
+
+// ── Pools ─────────────────────────────────────────────────────────────────────
+let pools_page = 0;
+let pools_searchTimer = null;
+function poolsSearchDebounce() {
+  clearTimeout(pools_searchTimer);
+  pools_searchTimer = setTimeout(() => { pools_page = 0; loadPools(); }, 300);
+}
+
+async function loadPools() {
+  const dex = document.getElementById('pools-dex').value;
+  const sort = document.getElementById('pools-sort').value;
+  const search = document.getElementById('pools-search').value.trim();
+  const params = new URLSearchParams({limit: PAGE, offset: pools_page * PAGE, sort});
+  if (dex) params.set('dex', dex);
+  if (search) params.set('search', search);
+  const data = await fetch('/api/pools?' + params).then(r => r.json()).catch(() => null);
+  if (!data) return;
+
+  // Populate dex dropdown once
+  const sel = document.getElementById('pools-dex');
+  if (data.dex_list && sel.children.length <= 1) {
+    data.dex_list.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d; opt.textContent = d;
+      sel.appendChild(opt);
+    });
+    if (dex) sel.value = dex;
+  }
+
+  document.getElementById('pools-container').innerHTML = renderPoolsTable(data.pools || []);
+  const totalPages = Math.max(1, Math.ceil((data.total||0) / PAGE));
+  document.getElementById('pools-page-info').textContent = `page ${pools_page+1} / ${totalPages} · ${data.total} pools`;
+  bindTippy();
+}
+
+function renderPoolsTable(pools) {
+  if (!pools || pools.length === 0) return '<div class="empty">No pools found</div>';
+  const fmtTVL = v => v >= 1e6 ? '$'+(v/1e6).toFixed(2)+'M' : v >= 1e3 ? '$'+(v/1e3).toFixed(1)+'k' : '$'+v.toFixed(0);
+  return `<div class="table-scroll"><table>
+    <thead><tr>
+      <th>Pair</th><th>DEX</th><th>Fee</th><th>TVL</th><th>Volume 24h</th><th>Spot Price</th><th>Address</th><th>Last Update</th><th>Status</th>
+    </tr></thead>
+    <tbody>${pools.map(p => `<tr>
+      <td style="font-weight:600">${p.symbol0||'?'} / ${p.symbol1||'?'}</td>
+      <td><span style="color:var(--purple)">${p.dex}</span></td>
+      <td class="mono">${p.fee_bps ? p.fee_bps+'bps' : p.fee_ppm ? (p.fee_ppm/100).toFixed(2)+'bps' : '—'}</td>
+      <td>${p.tvl_usd > 0 ? fmtTVL(p.tvl_usd) : '<span style="color:var(--dim)">—</span>'}</td>
+      <td>${p.volume_24h_usd > 0 ? fmtTVL(p.volume_24h_usd) : '<span style="color:var(--dim)">—</span>'}</td>
+      <td class="mono">${p.spot_price > 0 && p.spot_price < 1e30 ? p.spot_price.toPrecision(4) : '<span style="color:var(--dim)">—</span>'}</td>
+      <td class="mono"><a href="https://arbiscan.io/address/${p.address}" target="_blank">${p.address.slice(0,8)}…${p.address.slice(-4)}</a></td>
+      <td class="mono" style="color:var(--dim)">${p.last_updated ? ts(p.last_updated) : '—'}</td>
+      <td>${p.disabled ? '<span class="badge badge-dropped">disabled</span>' : p.is_dead ? '<span class="badge badge-reverted">dead</span>' : '<span class="badge badge-yes">live</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ── Forensics modal ──────────────────────────────────────────────────────────
+async function openForensics(id) {
+  document.getElementById('forensics-content').innerHTML = '<div class="loading">Loading…</div>';
+  document.getElementById('forensics-backdrop').style.display = 'flex';
+  const t = await fetch(`/api/trade?id=${id}`).then(r => r.json()).catch(e => ({error: String(e)}));
+  if (t.error) {
+    document.getElementById('forensics-content').innerHTML = `<div style="color:var(--red)">${t.error}</div>`;
+    return;
+  }
+  document.getElementById('forensics-content').innerHTML = renderForensics(t);
+  bindTippy();
+}
+
+function closeForensics() {
+  document.getElementById('forensics-backdrop').style.display = 'none';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeForensics(); });
+
+function renderForensics(t) {
+  const prices = buildSymbolPrices(t.hop_prices_json, '');
+  const tokenList = t.tokens ? t.tokens.split(',').map(s => tokSpan(s.trim(), prices)).join(' → ') : '—';
+  const profitPct = (Math.expm1(t.log_profit) * 100).toFixed(4);
+
+  // Amount in: convert from wei using first token decimals (approximation via price)
+  const amountInWei = BigInt(t.amount_in_wei || '0');
+  // Try to display amount in human units — for USDC (6 dec) or WETH (18 dec)
+  // We don't store decimals here so show raw wei + USD estimate
+  const startToken = (t.tokens || '').split(',')[0].trim();
+  const startPrice = prices[startToken.toLowerCase()] || 0;
+
+  // Pool states
+  let poolRows = '';
+  try {
+    const pools = JSON.parse(t.pool_states_json || '[]');
+    poolRows = pools.map((p, i) => {
+      const dex = t.dexes ? t.dexes.split(',')[i]?.trim() : p.dex;
+      return `<tr>
+        <td style="color:var(--dim)">${i+1}</td>
+        <td style="color:var(--purple)">${p.dex||dex||'—'}</td>
+        <td>${p.spot_rate ? '$'+Number(p.spot_rate).toFixed(4) : '—'}</td>
+        <td class="mono" style="font-size:10px">${p.liquidity||'—'}</td>
+        <td>${p.fee_bps != null ? p.fee_bps+'bps' : '—'}</td>
+        <td class="mono" style="font-size:10px"><a href="https://arbiscan.io/address/${p.address}" target="_blank">${p.address ? p.address.slice(0,10)+'…' : '—'}</a></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {}
+
+  // Hop forensics
+  let hopRows = '';
+  try {
+    const hops = JSON.parse(t.hop_forensics_json || '[]');
+    if (hops.length) {
+      hopRows = `<h3>Hop Forensics</h3>
+      <table class="pool-table"><thead><tr><th>#</th><th>Token In</th><th>Amount In</th><th>Token Out</th><th>Amount Out</th><th>Note</th></tr></thead><tbody>
+      ${hops.map((h, i) => `<tr>
+        <td>${i+1}</td>
+        <td>${tokSpan(h.symbol_in||'?', prices)}</td>
+        <td class="mono">${h.amount_in_human||'—'}</td>
+        <td>${tokSpan(h.symbol_out||'?', prices)}</td>
+        <td class="mono">${h.amount_out_human||'—'}</td>
+        <td style="color:var(--dim)">${h.note||''}</td>
+      </tr>`).join('')}
+      </tbody></table>`;
+    }
+  } catch(e) {}
+
+  // Competitor hashes
+  const compHashes = t.competitor_hashes
+    ? t.competitor_hashes.split(',').filter(Boolean).map(h => shortHash(h.trim())).join(' ')
+    : '—';
+
+  const statusCls = {success:'badge-success',reverted:'badge-reverted',pending:'badge-pending',dropped:'badge-dropped'}[t.status]||'badge-dropped';
+
+  return `
+  <h2>Trade #${t.id} — <span class="badge ${statusCls}">${t.status}</span></h2>
+
+  <h3>Summary</h3>
+  <div class="frow"><span class="flabel">TX Hash</span><span class="fval">${shortHash(t.tx_hash)}</span></div>
+  <div class="frow"><span class="flabel">Submitted</span><span class="fval">${ts(t.submitted_at)}</span></div>
+  <div class="frow"><span class="flabel">Path</span><span class="fval">${tokenList}</span></div>
+  <div class="frow"><span class="flabel">Block</span><span class="fval">${t.block_number||'—'}${t.block_position != null ? ' · pos #'+t.block_position : ''}${t.block_total_txs ? ' / '+t.block_total_txs+' txs' : ''}</span></div>
+  <div class="frow"><span class="flabel">Gas used</span><span class="fval">${t.gas_used ? t.gas_used.toLocaleString() : '—'} · ${t.gas_price_gwei} gwei</span></div>
+
+  <h3>Simulation at Decision</h3>
+  <div class="frow"><span class="flabel">Spot-rate profit</span><span class="fval">${profitPct}% · ${usd(t.profit_usd_est)} est.</span></div>
+  <div class="frow"><span class="flabel">Sim profit</span><span class="fval">${t.sim_profit_bps} bps · ${t.sim_profit_wei} wei (${startToken})</span></div>
+  <div class="frow"><span class="flabel">Min profit threshold</span><span class="fval">${usd(t.min_profit_usd_at_decision)}</span></div>
+  <div class="frow"><span class="flabel">Flash loan amount</span><span class="fval">${t.amount_in_wei} wei${startPrice ? ' ≈ '+usd(Number(t.amount_in_wei) * startPrice / 1e6) : ''}</span></div>
+
+  <h3>Execution</h3>
+  <div class="frow"><span class="flabel">Detect RPC</span><span class="fval">${t.detect_rpc||'—'}</span></div>
+  <div class="frow"><span class="flabel">Submit RPC</span><span class="fval">${t.submit_rpc||'—'}</span></div>
+  <div class="frow"><span class="flabel">Competitors before</span><span class="fval" style="color:${t.competitors_before>0?'var(--red)':'inherit'}">${t.competitors_before ?? '—'}</span></div>
+  <div class="frow"><span class="flabel">Competitor TXs</span><span class="fval">${compHashes}</span></div>
+  ${t.revert_reason ? `<div class="frow"><span class="flabel">Revert reason</span><span class="fval" style="color:var(--red)">${t.revert_reason}</span></div>` : ''}
+
+  ${poolRows ? `<h3>Pool States at Submission</h3>
+  <div class="table-scroll"><table class="pool-table"><thead><tr><th>#</th><th>DEX</th><th>Spot Rate</th><th>Liquidity</th><th>Fee</th><th>Address</th></tr></thead>
+  <tbody>${poolRows}</tbody></table></div>` : ''}
+
+  ${hopRows}
+  `;
+}
+
+// ── DB Browser ───────────────────────────────────────────────────────────────
+function dbQuick(sql) {
+  document.getElementById('db-sql').value = sql;
+  dbRun();
+}
+
+async function dbRun() {
+  const sql = document.getElementById('db-sql').value.trim();
+  if (!sql) return;
+  const status = document.getElementById('db-status');
+  const resultEl = document.getElementById('db-result');
+  status.textContent = 'running…';
+  resultEl.innerHTML = '';
+  try {
+    const res = await fetch('/api/query', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({sql})
+    }).then(r => r.json());
+
+    if (res.error) {
+      status.textContent = '';
+      resultEl.innerHTML = `<div style="color:var(--red);padding:10px;font-family:monospace;font-size:12px">${res.error}</div>`;
+      return;
+    }
+
+    const isSelect = res.columns && res.columns.length > 0;
+    if (!isSelect) {
+      status.textContent = `${res.rows_affected} row(s) affected`;
+      return;
+    }
+
+    const count = (res.rows || []).length;
+    status.textContent = `${count} row${count!==1?'s':''}`;
+    resultEl.innerHTML = renderDBTable(res.columns, res.rows || []);
+  } catch(e) {
+    status.textContent = '';
+    resultEl.innerHTML = `<div style="color:var(--red);padding:10px">${e}</div>`;
+  }
+}
+
+function renderDBTable(cols, rows) {
+  const hasId = cols.includes('id') || cols.includes('rowid');
+  const idCol = cols.includes('id') ? 'id' : 'rowid';
+  const idIdx = cols.indexOf(idCol);
+
+  // Detect the table from the current SQL for delete
+  const sql = document.getElementById('db-sql').value;
+  const tableMatch = sql.match(/from\s+(\w+)/i);
+  const table = tableMatch ? tableMatch[1] : null;
+
+  const headers = cols.map(c => `<th>${c}</th>`).join('') + (hasId && table ? '<th></th>' : '');
+  const bodyRows = rows.map(row => {
+    const cells = row.map((v, i) => {
+      const display = v === null ? '<span style="color:var(--dim)">NULL</span>' : String(v);
+      // Truncate long values but show full on hover
+      const truncated = display.length > 80 ? display.slice(0, 80) + '…' : display;
+      return `<td title="${String(v ?? '').replace(/"/g,'&quot;')}" style="font-family:monospace;font-size:11px">${truncated}</td>`;
+    }).join('');
+    const deleteBtn = (hasId && table && idIdx >= 0)
+      ? `<td><button class="btn" style="color:var(--red);border-color:var(--red);padding:2px 7px;font-size:11px" onclick="dbDelete('${table}','${idCol}',${row[idIdx]},this)">del</button></td>`
+      : '';
+    return `<tr>${cells}${deleteBtn}</tr>`;
+  }).join('');
+
+  return `<div class="table-wrap"><div class="table-scroll"><table>
+    <thead><tr>${headers}</tr></thead>
+    <tbody>${bodyRows}</tbody>
+  </table></div></div>`;
+}
+
+async function dbDelete(table, idCol, id, btn) {
+  if (!confirm(`Delete ${table} where ${idCol}=${id}?`)) return;
+  const sql = `DELETE FROM ${table} WHERE ${idCol}=${id}`;
+  const res = await fetch('/api/query', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({sql})
+  }).then(r => r.json());
+  if (res.error) { alert(res.error); return; }
+  btn.closest('tr').remove();
+}
+
+// ── Init & auto-refresh ───────────────────────────────────────────────────────
+
+// Update clock
+setInterval(() => {
+  document.getElementById('uptime').textContent = new Date().toLocaleTimeString('en-CA',{hour12:false});
+}, 1000);
+</script>
+</body>
+</html>

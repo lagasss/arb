@@ -1,0 +1,11 @@
+2026/04/09 19:45:37 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/10 23:55:37 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/10 23:58:20 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/10 23:58:20 listen tcp :8080: bind: address already in use
+2026/04/18 00:03:52 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/18 00:10:24 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/18 04:12:59 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/18 04:20:33 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/18 04:20:33 listen tcp :8080: bind: address already in use
+2026/04/18 04:23:09 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log
+2026/04/18 04:29:37 Dashboard on :8080  db=/home/arbitrator/go/arb-bot/arb.db  log=/tmp/arb-bot.log

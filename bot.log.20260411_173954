@@ -1,0 +1,538 @@
+2026/04/11 17:29:44 [bot] loaded 2 junk token(s) — will be excluded from cycles
+2026/04/11 17:29:44 [bot] PancakeV3 dispatch: DEX_V3 (1, broken) — set trading.executor_supports_pancake_v3=true after redeploying the contract
+2026/04/11 17:29:44 [executor] submit client connected to sequencer: https://arb1-sequencer.arbitrum.io/rpc
+2026/04/11 17:29:44 [executor] simulation client connected to: https://arbitrum-mainnet.core.chainstack.com/3f4c4d6546df8aabd1d7a56baf76a18b
+2026/04/11 17:29:44 [bot] starting...
+2026/04/11 17:29:44 [bot] token registry: 17 tokens loaded
+2026/04/11 17:29:44 [bot] DB warm-start: 213 pools loaded (metadata only, awaiting multicall)
+2026/04/11 17:29:44 [bot] V4 pools: 45 loaded with exact fees from v4_pools
+2026/04/11 17:29:44 [subgraph] fetched 248 UniV3 pools (TVL≥$50k)
+2026/04/11 17:29:45 [subgraph] fetched 22 CamelotV2 pools (TVL≥$50k)
+2026/04/11 17:29:45 [subgraph] fetched 34 CamelotV3 pools (TVL≥$50k)
+2026/04/11 17:29:47 [subgraph] fetched 1000 SushiV2 pools (TVL≥$50k)
+2026/04/11 17:29:48 [subgraph] fetched 2 Balancer pools (TVL≥$50k)
+2026/04/11 17:29:48 [subgraph] fetched 1 RamsesV3 pools (TVL≥$50k)
+2026/04/11 17:29:48 [subgraph] fetched 30 PancakeV3 pools (TVL≥$50k)
+2026/04/11 17:29:48 [bot] subgraph seeded 1337 pools
+2026/04/11 17:29:48 [bot] pinned 39 pools (0 newly resolved from chain), registry total: 1460
+2026/04/11 17:29:48 [subgraph] initial pool metrics refresh...
+2026/04/11 17:29:48 [swap] listener started
+2026/04/11 17:29:48 [cyclecache] rebuilt: 0 cycles across 0 pools (0.0ms)
+2026/04/11 17:29:48 [executor] warmup: nonce=392
+2026/04/11 17:29:48 [discovery] watching for new pools...
+2026/04/11 17:29:48 [gas] price=0.0200 gwei  txCost=$0.0408  minProfit=$0.1224 (3.0× cost, floor=$0.001)
+2026/04/11 17:29:48 [compwatcher] started (min_profit=$0)
+2026/04/11 17:29:48 [yield-peg] monitor started
+2026/04/11 17:29:48 [compwatcher] backfilling historical pools (rows 1..6662)...
+2026/04/11 17:29:48 [swap] subscribed to 1460 pools
+2026/04/11 17:29:48 [compwatcher] added pool 0xa8ba6d8cfc31 (UniV3 GHO/USDC fee=5) from competitor arb $0.03
+2026/04/11 17:29:49 [compwatcher] added pool 0x3ed8bccbb928 (Sushi GHO/USDC fee=30) from competitor arb $0.03
+2026/04/11 17:29:49 [compwatcher] added pool 0xb7e50106a5bd (Sushi MAGIC/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:29:49 [compwatcher] added pool 0x036fe2396119 (Sushi MAGIC/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:49 [compwatcher] added pool 0x0d59fad998e4 (RamsesV3 WETH/USDT fee=10) from competitor arb $0.01
+2026/04/11 17:29:49 [compwatcher] added pool 0x7548bd60cb8f (UniV3 USDC/USD+ fee=1) from competitor arb $0.05
+2026/04/11 17:29:50 [compwatcher] added pool 0xed90f4c1d1ef (RamsesV3 USDC/DAI fee=0) from competitor arb $0.04
+2026/04/11 17:29:50 [subgraph] refreshed metrics for 255 V3 pools
+2026/04/11 17:29:50 [compwatcher] added pool 0xc051405edef0 (UniV3 ARB/DAI fee=30) from competitor arb $0.04
+2026/04/11 17:29:50 [compwatcher] added pool 0x8b34d24154f6 (UniV2 WETH/USDC.e fee=25) from competitor arb $0.01
+2026/04/11 17:29:50 [compwatcher] added pool 0x1a95cfd65702 (RamsesV3 WETH/USDT fee=30) from competitor arb $0.01
+2026/04/11 17:29:51 [compwatcher] added pool 0xa6efc26daa4b (Sushi JONES/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:51 [compwatcher] added pool 0xe8ee01ae5959 (Sushi JONES/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:29:51 [swap] subscribed to 1472 pools
+2026/04/11 17:29:51 [compwatcher] added pool 0x6478931004cd (Sushi MAGIC/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:52 [compwatcher] added pool 0x8edfb54e8c76 (Sushi MAGIC/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:29:52 [compwatcher] added pool 0xa9e604d04b95 (RamsesV3 WETH/USDC fee=100) from competitor arb $0.01
+2026/04/11 17:29:52 [compwatcher] added pool 0xd7d73d0d07c3 (Sushi $SLURP/USDC.e fee=30) from competitor arb $0.02
+2026/04/11 17:29:52 [compwatcher] added pool 0x39fb5888789d (Sushi $SLURP/WETH fee=30) from competitor arb $0.02
+2026/04/11 17:29:53 [subgraph] refreshed metrics for 28 V2 pools
+2026/04/11 17:29:53 [compwatcher] added pool 0xad198ad5f32c (PancakeV3 WETH/UNI fee=5) from competitor arb $0.04
+2026/04/11 17:29:53 [subgraph] refreshed metrics for 34 V3 pools
+2026/04/11 17:29:53 [compwatcher] added pool 0x41938256699b (PancakeV3 #BB/UNI fee=25) from competitor arb $0.04
+2026/04/11 17:29:53 [compwatcher] added pool 0xd4d650ed19e7 (PancakeV3 #BB/ARB fee=25) from competitor arb $0.04
+2026/04/11 17:29:54 [multicall] fallback: 0/5 pools rescued via direct call
+2026/04/11 17:29:54 [multicall] v3pools=404 withPrice=399 withLiquidity=359
+2026/04/11 17:29:54 [compwatcher] added pool 0x8f5384b372a9 (UniV2 ARB/DAI fee=30) from competitor arb $0.06
+2026/04/11 17:29:54 [compwatcher] added pool 0xa20723963fb3 (Camelot USND/WETH fee=29) from competitor arb $0.05
+2026/04/11 17:29:54 [compwatcher] added pool 0x319b7186c838 (UniV3 USND/USDC fee=5) from competitor arb $0.05
+2026/04/11 17:29:55 [swap] subscribed to 1483 pools
+2026/04/11 17:29:55 [compwatcher] added pool 0xc59d45596c0d (UniV2 AIO/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:55 [compwatcher] added pool 0x2f535f3b3017 (UniV2 WETH/AIO fee=30) from competitor arb $0.01
+2026/04/11 17:29:56 [compwatcher] added pool 0xe32cbb88e35a (Sushi TIF/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:56 [compwatcher] added pool 0x19ef9f4fc92c (Sushi TIF/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:29:56 [compwatcher] added pool 0x4d4d6fab1e0b (Sushi RDNT/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:56 [compwatcher] added pool 0x3ec0eddcd1e2 (UniV2 ZYB/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:29:57 [compwatcher] added pool 0xf69223b75d9c (UniV2 ZYB/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:29:57 [compwatcher] added pool 0x81428a56b7e4 (UniV3 USDC/cbBTC fee=5) from competitor arb $0.05
+2026/04/11 17:29:57 [compwatcher] added pool 0xf5bf05419dd4 (RamsesV3 WBTC/cbBTC fee=0) from competitor arb $0.05
+2026/04/11 17:29:58 [subgraph] refreshed metrics for 1000 Messari pools
+2026/04/11 17:29:58 [swap] subscribed to 1492 pools
+2026/04/11 17:29:58 [subgraph] refreshed metrics for 2 Balancer pools
+2026/04/11 17:29:58 [compwatcher] added pool 0x2f1edb07737a (PancakeV3 RGT/USDT fee=100) from competitor arb $0.01
+2026/04/11 17:29:58 [subgraph] refreshed metrics for 1 V3 pools
+2026/04/11 17:29:58 [subgraph] refreshed metrics for 40 V3 pools
+2026/04/11 17:29:58 [compwatcher] added pool 0xa53d33e543a3 (RamsesV3 USDC/USDC.e fee=0) from competitor arb $0.07
+2026/04/11 17:29:58 [swap] subscribed to 1494 pools
+2026/04/11 17:29:59 [multicall] fallback: 0/5 pools rescued via direct call
+2026/04/11 17:29:59 [compwatcher] added pool 0xf4143962ac5b (DeltaSwap weETH/USDC fee=30) from competitor arb $0.03
+2026/04/11 17:29:59 [compwatcher] added pool 0x14353445c832 (UniV3 weETH/WETH fee=1) from competitor arb $0.03
+2026/04/11 17:29:59 [compwatcher] added pool 0x3f2b1e11bdbc (UniV2 WETH/KIMA fee=30) from competitor arb $0.01
+2026/04/11 17:30:00 [uniV4] refreshed metrics for 41 UniV4 pools (TVL+volume from Uniswap API)
+2026/04/11 17:30:00 [compwatcher] added pool 0xc137f7e0d467 (Sushi STG/ARB fee=30) from competitor arb $0.01
+2026/04/11 17:30:00 [compwatcher] added pool 0xe2f3f77b0c5a (UniV3 STG/DAI fee=30) from competitor arb $0.01
+2026/04/11 17:30:00 [swap] subscribed to 1499 pools
+2026/04/11 17:30:00 [compwatcher] added pool 0x15811145e3f1 (UniV3 WETH/cbBTC fee=30) from competitor arb $0.07
+2026/04/11 17:30:01 [compwatcher] added pool 0xb63458af0083 (UniV2 WETH/HRA fee=100) from competitor arb $0.03
+2026/04/11 17:30:01 [compwatcher] added pool 0x65c64d0ab82f (UniV2 USDC/HRA fee=30) from competitor arb $0.03
+2026/04/11 17:30:02 [swap] subscribed to 1502 pools
+2026/04/11 17:30:03 [compwatcher] added pool 0x9360c3c95ca5 (UniV3 ZRO/USDC fee=30) from competitor arb $0.06
+2026/04/11 17:30:03 [compwatcher] added pool 0x70bfe342429a (DeltaSwap PEPE/USDC fee=30) from competitor arb $0.06
+2026/04/11 17:30:04 [multicall] fallback: 0/5 pools rescued via direct call
+2026/04/11 17:30:04 [compwatcher] added pool 0x9f7f11b81358 (RamsesV3 WETH/USDC.e fee=30) from competitor arb $0.01
+2026/04/11 17:30:04 [swap] subscribed to 1505 pools
+2026/04/11 17:30:04 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:30:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:30:04 [compwatcher] added pool 0x49928cfe5ca3 (Camelot SPA/USDC.e fee=29) from competitor arb $0.03
+2026/04/11 17:30:04 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:30:04 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:30:05 [compwatcher] added pool 0x014079e1eef0 (UniV3 BTC.b/WBTC fee=1) from competitor arb $0.04
+2026/04/11 17:30:05 [compwatcher] added pool 0xfbd496e111a0 (UniV3 USND/tBTC fee=30) from competitor arb $0.04
+2026/04/11 17:30:05 [compwatcher] added pool 0x3a0ba6652fbf (SushiV3 OBT/USDC fee=100) from competitor arb $0.04
+2026/04/11 17:30:05 [compwatcher] added pool 0x616083e2eac0 (UniV3 OBT/WETH fee=100) from competitor arb $0.04
+2026/04/11 17:30:05 [swap] subscribed to 1510 pools
+2026/04/11 17:30:06 [compwatcher] added pool 0xd97c8ee1c1e4 (UniV3 UNI/USDT fee=30) from competitor arb $1.07
+2026/04/11 17:30:07 [compwatcher] added pool 0xe4d9faddd9bc (UniV3 EURA/USDC.e fee=5) from competitor arb $0.02
+2026/04/11 17:30:07 [compwatcher] added pool 0x3b2eafce2b05 (UniV3 UNI/USDT fee=5) from competitor arb $0.03
+2026/04/11 17:30:07 [compwatcher] added pool 0xfce79b10d192 (PancakeV3 WBTC/#BB fee=25) from competitor arb $0.05
+2026/04/11 17:30:07 [compwatcher] added pool 0xe07b06b136e2 (SushiV3 #BB/UNI fee=30) from competitor arb $0.05
+2026/04/11 17:30:07 [compwatcher] added pool 0x4f535a016db9 (PancakeV3 #BB/WETH fee=25) from competitor arb $0.03
+2026/04/11 17:30:07 [swap] subscribed to 1516 pools
+2026/04/11 17:30:09 [multicall] fallback: 0/6 pools rescued via direct call
+2026/04/11 17:30:09 [compwatcher] added pool 0x46c47c8daabc (UniV3 WBTC/DAI fee=30) from competitor arb $0.04
+2026/04/11 17:30:10 [compwatcher] added pool 0x80c91cdaaa95 (Sushi STG/USDC fee=30) from competitor arb $0.01
+2026/04/11 17:30:10 [compwatcher] added pool 0x47888c34e9aa (Sushi STG/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:30:10 [compwatcher] added pool 0x67ab7dc903a1 (UniV3 USD+/USDT fee=1) from competitor arb $0.03
+2026/04/11 17:30:10 [cyclecache] rebuilt: 95498 cycles across 112 pools (7386.5ms)
+2026/04/11 17:30:11 [swap] subscribed to 1520 pools
+2026/04/11 17:30:11 [compwatcher] added pool 0x8a43b9fb7455 (RamsesV3 USDe/WETH fee=30) from competitor arb $0.06
+2026/04/11 17:30:12 [compwatcher] added pool 0xdf63268af25a (RamsesV2 USDC/USDT fee=0) from competitor arb $1.27
+2026/04/11 17:30:12 [compwatcher] added pool 0xcd518702e7d8 (UniV3 PEPE/USDT fee=1) from competitor arb $0.03
+2026/04/11 17:30:12 [compwatcher] added pool 0x012fa3fa3a07 (Sushi ABC/USDT fee=30) from competitor arb $0.01
+2026/04/11 17:30:13 [compwatcher] added pool 0x08e0b47588e1 (UniV3 SPA/USDs fee=30) from competitor arb $0.07
+2026/04/11 17:30:13 [swap] subscribed to 1525 pools
+2026/04/11 17:30:14 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:30:14 [compwatcher] added pool 0xb6dd51d54258 (Sushi WETH/MIM fee=30) from competitor arb $0.10
+2026/04/11 17:30:14 [compwatcher] added pool 0x9844efdf9571 (UniV2 E280/USDC fee=30) from competitor arb $0.01
+2026/04/11 17:30:14 [compwatcher] added pool 0x8dce8e32d534 (UniV2 E280/WETH fee=30) from competitor arb $0.01
+2026/04/11 17:30:15 [compwatcher] added pool 0x23c6690c352a (RamsesV2 WETH/USDT fee=5) from competitor arb $0.01
+2026/04/11 17:30:15 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:30:15 [compwatcher] added pool 0x3370ea4a1640 (SushiV3 WETH/DAI fee=30) from competitor arb $0.01
+2026/04/11 17:30:15 [swap] subscribed to 1530 pools
+2026/04/11 17:30:16 [compwatcher] added pool 0x67e196b90044 (UniV2 XAUt0/USDT fee=30) from competitor arb $0.03
+2026/04/11 17:30:16 [compwatcher] added pool 0x696d792d0fb0 (UniV3 XAUt0/USDT fee=5) from competitor arb $0.03
+2026/04/11 17:30:16 [compwatcher] added pool 0xe4bfcc208f34 (PancakeV3 KIMA/USDT fee=5) from competitor arb $0.01
+2026/04/11 17:30:16 [swap] subscribed to 1533 pools
+2026/04/11 17:30:17 [compwatcher] added pool 0x8d68772af387 (UniV3 LINK/UNI fee=30) from competitor arb $0.05
+2026/04/11 17:30:18 [swap] subscribed to 1534 pools
+2026/04/11 17:30:18 [compwatcher] added pool 0x0c4500479e68 (RamsesV3 WETH/cbBTC fee=30) from competitor arb $0.03
+2026/04/11 17:30:18 [stats] pools=1535 edges=3070 live=2960 swaps=29 cached_cycles=95498
+2026/04/11 17:30:18 [gas] price=0.0200 gwei  txCost=$0.0271  minProfit=$0.0814 (3.0× cost, floor=$0.001)
+2026/04/11 17:30:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:30:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230936 div=4.55bps (underpriced) ~$46
+2026/04/11 17:30:18 [yield-peg] wstETH/WETH pool=0xdeb89de4... trueRate=1.231496 ammRate=1.231022 div=3.86bps (underpriced) ~$39
+2026/04/11 17:30:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:30:18 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:30:18 [swap] subscribed to 1535 pools
+2026/04/11 17:30:19 [poolstore] sync done in 366ms — 1268 tokens, 1683 pools (1631 live)
+2026/04/11 17:30:19 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:30:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:30:19 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=3/5
+2026/04/11 17:30:19 [compwatcher] added pool 0x844149038228 (Sushi MAGIC/USDT fee=30) from competitor arb $0.01
+2026/04/11 17:30:20 [compwatcher] added pool 0xaeeceec4b31d (UniV3 axlUSDC/USDC.e fee=1) from competitor arb $4.69
+2026/04/11 17:30:20 [swap] subscribed to 1537 pools
+2026/04/11 17:30:21 [compwatcher] added pool 0xb0c6be7b6aab (PancakeV3 WETH/GRAI fee=25) from competitor arb $0.04
+2026/04/11 17:30:22 [swap] subscribed to 1538 pools
+2026/04/11 17:30:22 [compwatcher] added pool 0xc1ad239594c1 (Camelot USDC/USDC.e fee=1) from competitor arb $0.15
+2026/04/11 17:30:23 [compwatcher] added pool 0xd7847a8ffcbb (UniV3 Unishop.ai/USDC fee=100) from competitor arb $0.04
+2026/04/11 17:30:23 [compwatcher] added pool 0x1ba0854ab836 (UniV3 Anon/WETH fee=100) from competitor arb $0.16
+2026/04/11 17:30:23 [compwatcher] added pool 0xe4c9675f661a (PancakeV3 Anon/USDC fee=25) from competitor arb $0.16
+2026/04/11 17:30:24 [compwatcher] added pool 0xeeaa3e45c763 (UniV3 Up/USDT fee=30) from competitor arb $1.84
+2026/04/11 17:30:24 [swap] subscribed to 1543 pools
+2026/04/11 17:30:25 [compwatcher] added pool 0x5a9f6706c583 (UniV2 TMX/USDC fee=30) from competitor arb $44.47
+2026/04/11 17:30:25 [cyclecache] rebuilt: 95796 cycles across 112 pools (7150.7ms)
+2026/04/11 17:30:26 [swap] subscribed to 1544 pools
+2026/04/11 17:30:26 [compwatcher] added pool 0x692a0b300366 (Sushi WETH/DAI fee=30) from competitor arb $0.01
+2026/04/11 17:30:26 [compwatcher] added pool 0x000e082e6862 (PancakeV3 WETH/DAI fee=5) from competitor arb $0.01
+2026/04/11 17:30:26 [compwatcher] added pool 0x290828d7c227 (PancakeV3 USDC/thBILL fee=1) from competitor arb $0.03
+2026/04/11 17:30:27 [compwatcher] added pool 0xdfa19e743421 (UniV3 COMP/WETH fee=30) from competitor arb $0.28
+2026/04/11 17:30:27 [compwatcher] added pool 0x642e621dc9a6 (UniV3 COMP/WETH fee=100) from competitor arb $0.28
+2026/04/11 17:30:28 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:30:28 [compwatcher] added pool 0x9014c1ec3170 (DeltaSwap PENDLE/WETH fee=30) from competitor arb $0.05
+2026/04/11 17:30:28 [swap] subscribed to 1550 pools
+2026/04/11 17:30:29 [compwatcher] added pool 0xd90660a0b8ad (UniV3 weETH/WETH fee=5) from competitor arb $0.04
+2026/04/11 17:30:29 [swap] subscribed to 1551 pools
+2026/04/11 17:30:29 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:30:30 [compwatcher] added pool 0xf6d0805addcf (UniV3 JOSS/USDC fee=100) from competitor arb $0.06
+2026/04/11 17:30:30 [swap] subscribed to 1552 pools
+2026/04/11 17:30:32 [compwatcher] added pool 0x94462e243a30 (UniV3 USDC/TSL8 fee=30) from competitor arb $0.04
+2026/04/11 17:30:32 [compwatcher] added pool 0x31a45d8d75d9 (UniV3 ARB/TSL8 fee=30) from competitor arb $0.04
+2026/04/11 17:30:32 [compwatcher] added pool 0x251ae6900c29 (UniV2 ARB/USDC.e fee=25) from competitor arb $0.04
+2026/04/11 17:30:32 [compwatcher] added pool 0xc5b6ca4214ed (UniV3 WETH/TSL8 fee=30) from competitor arb $0.04
+2026/04/11 17:30:33 [swap] subscribed to 1556 pools
+2026/04/11 17:30:33 [compwatcher] added pool 0x955f269abee8 (ArbSwap ARB/DAI fee=30) from competitor arb $0.01
+2026/04/11 17:30:33 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0044 samples=5/5
+2026/04/11 17:30:33 [compwatcher] added pool 0x70498de58afd (Swapr SWPR/USDT fee=30) from competitor arb $0.01
+2026/04/11 17:30:34 [compwatcher] added pool 0x3de61bb3d00d (Swapr ARB/SWPR fee=30) from competitor arb $0.01
+2026/04/11 17:30:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:30:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:30:35 [swap] subscribed to 1559 pools
+2026/04/11 17:30:35 [compwatcher] added pool 0x6387b0d58531 (UniV3 DAI/USDT fee=5) from competitor arb $0.03
+2026/04/11 17:30:35 [compwatcher] added pool 0x460d1d0bb89d (SushiV3 #BTB/GRAIL fee=30) from competitor arb $0.04
+2026/04/11 17:30:36 [compwatcher] added pool 0x7f65b1575824 (SushiV3 GRAIL/#BB fee=30) from competitor arb $0.04
+2026/04/11 17:30:36 [compwatcher] added pool 0xc6917bc8e4de (SushiV3 #BTB/USDC fee=30) from competitor arb $0.04
+2026/04/11 17:30:36 [compwatcher] added pool 0x49ba7d5f65f2 (UniV3 WETH/AARK fee=100) from competitor arb $0.06
+2026/04/11 17:30:37 [compwatcher] added pool 0x92128d03e513 (PancakeV3 FLUID/WETH fee=25) from competitor arb $0.01
+2026/04/11 17:30:38 [compwatcher] added pool 0x8dca5a5dba32 (UniV2 WETH/DAI fee=30) from competitor arb $0.01
+2026/04/11 17:30:38 [compwatcher] historical backfill done in 50s
+2026/04/11 17:30:38 [swap] subscribed to 1566 pools
+2026/04/11 17:30:40 [cyclecache] rebuilt: 96190 cycles across 113 pools (7189.4ms)
+2026/04/11 17:30:40 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:30:42 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:30:48 [stats] pools=1566 edges=3132 live=3020 swaps=105 cached_cycles=96190
+2026/04/11 17:30:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:30:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:30:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:30:49 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=3/5
+2026/04/11 17:30:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:30:49 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:30:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:30:53 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:30:54 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:30:55 [cyclecache] rebuilt: 95911 cycles across 112 pools (7207.1ms)
+2026/04/11 17:31:03 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:31:03 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:31:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:31:04 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0000 samples=3/5
+2026/04/11 17:31:06 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:31:07 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:31:08 [swap] logs chan: current=0 peak_30s=18 cap=256
+2026/04/11 17:31:18 [stats] pools=1566 edges=3132 live=3020 swaps=123 cached_cycles=95911
+2026/04/11 17:31:18 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:31:18 [gas] price=0.0201 gwei  txCost=$0.0272  minProfit=$0.0816 (3.0× cost, floor=$0.001)
+2026/04/11 17:31:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:31:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:31:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:31:19 [poolstore] sync done in 352ms — 1268 tokens, 1683 pools (1632 live)
+2026/04/11 17:31:19 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:31:19 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:31:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:31:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:31:20 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:31:31 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:31:32 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:31:33 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:31:33 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:31:34 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=3/5
+2026/04/11 17:31:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=4/5
+2026/04/11 17:31:38 [swap] logs chan: current=0 peak_30s=3 cap=256
+2026/04/11 17:31:44 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:31:45 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:31:48 [stats] pools=1566 edges=3132 live=3020 swaps=229 cached_cycles=95911
+2026/04/11 17:31:48 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:31:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:31:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:31:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:31:49 [calibrator] Camelot median=1.0000 ema=0.9981 spread=0.1115 samples=5/5
+2026/04/11 17:31:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=4/5
+2026/04/11 17:31:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:31:55 [cyclecache] rebuilt: 96557 cycles across 114 pools (7320.7ms)
+2026/04/11 17:31:59 [multicall] fallback: 0/8 pools rescued via direct call
+2026/04/11 17:32:00 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:32:03 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:32:03 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:32:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=4/5
+2026/04/11 17:32:05 [calibrator] Camelot median=0.9974 ema=0.9979 spread=0.1115 samples=5/5
+2026/04/11 17:32:08 [swap] logs chan: current=0 peak_30s=32 cap=256
+2026/04/11 17:32:15 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:32:16 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:32:18 [stats] pools=1566 edges=3132 live=3022 swaps=325 cached_cycles=96557
+2026/04/11 17:32:18 [gas] price=0.0200 gwei  txCost=$0.0272  minProfit=$0.0815 (3.0× cost, floor=$0.001)
+2026/04/11 17:32:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:32:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:32:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:32:19 [poolstore] sync done in 345ms — 1268 tokens, 1683 pools (1633 live)
+2026/04/11 17:32:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:32:19 [calibrator] Camelot median=0.9973 ema=0.9977 spread=0.0027 samples=5/5
+2026/04/11 17:32:20 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:32:26 [cyclecache] rebuilt: 95880 cycles across 112 pools (7551.3ms)
+2026/04/11 17:32:27 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:32:28 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:32:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:32:34 [calibrator] Camelot median=1.0000 ema=0.9984 spread=0.1388 samples=5/5
+2026/04/11 17:32:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:32:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:32:38 [swap] logs chan: current=0 peak_30s=4 cap=256
+2026/04/11 17:32:39 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:32:40 [cyclecache] rebuilt: 95182 cycles across 110 pools (7132.6ms)
+2026/04/11 17:32:40 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:32:48 [stats] pools=1566 edges=3132 live=3022 swaps=358 cached_cycles=95182
+2026/04/11 17:32:48 [gas] price=0.0200 gwei  txCost=$0.0271  minProfit=$0.0814 (3.0× cost, floor=$0.001)
+2026/04/11 17:32:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:32:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:32:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:32:48 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:32:49 [calibrator] Camelot median=0.9973 ema=0.9981 spread=0.0027 samples=5/5
+2026/04/11 17:32:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:32:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:32:52 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:32:53 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:33:03 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:33:04 [calibrator] Camelot median=0.9973 ema=0.9978 spread=0.0000 samples=3/5
+2026/04/11 17:33:04 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:33:05 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:33:07 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:33:08 [swap] logs chan: current=0 peak_30s=2 cap=256
+2026/04/11 17:33:08 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:33:18 [stats] pools=1566 edges=3132 live=3022 swaps=382 cached_cycles=95182
+2026/04/11 17:33:18 [gas] price=0.0200 gwei  txCost=$0.0268  minProfit=$0.0805 (3.0× cost, floor=$0.001)
+2026/04/11 17:33:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:33:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:33:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:33:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:33:19 [poolstore] sync done in 374ms — 1268 tokens, 1683 pools (1633 live)
+2026/04/11 17:33:19 [calibrator] Camelot median=0.9973 ema=0.9977 spread=0.0018 samples=3/5
+2026/04/11 17:33:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:33:19 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:33:21 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:33:23 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:33:34 [calibrator] Camelot median=0.9973 ema=0.9976 spread=0.0018 samples=4/5
+2026/04/11 17:33:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:33:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:33:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:33:36 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:33:37 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:33:38 [swap] logs chan: current=0 peak_30s=4 cap=256
+2026/04/11 17:33:48 [stats] pools=1566 edges=3132 live=3022 swaps=413 cached_cycles=95182
+2026/04/11 17:33:48 [gas] price=0.0201 gwei  txCost=$0.0269  minProfit=$0.0807 (3.0× cost, floor=$0.001)
+2026/04/11 17:33:48 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:33:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:33:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:33:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:33:49 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:33:49 [calibrator] Camelot median=0.9973 ema=0.9975 spread=0.0027 samples=5/5
+2026/04/11 17:33:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:33:50 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:33:50 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:34:01 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:34:03 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:34:04 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:34:04 [calibrator] Camelot median=0.9973 ema=0.9974 spread=0.0027 samples=5/5
+2026/04/11 17:34:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:34:08 [swap] logs chan: current=0 peak_30s=19 cap=256
+2026/04/11 17:34:10 [cyclecache] rebuilt: 95273 cycles across 110 pools (7145.4ms)
+2026/04/11 17:34:14 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:34:15 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:34:18 [stats] pools=1566 edges=3132 live=3022 swaps=495 cached_cycles=95273
+2026/04/11 17:34:18 [gas] price=0.0200 gwei  txCost=$0.0272  minProfit=$0.0815 (3.0× cost, floor=$0.001)
+2026/04/11 17:34:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:34:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:34:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:34:18 [calibrator] Camelot median=0.9973 ema=0.9974 spread=0.0018 samples=4/5
+2026/04/11 17:34:18 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:34:19 [poolstore] sync done in 344ms — 1268 tokens, 1683 pools (1633 live)
+2026/04/11 17:34:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:34:19 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=4/5
+2026/04/11 17:34:25 [cyclecache] rebuilt: 95742 cycles across 111 pools (7313.7ms)
+2026/04/11 17:34:28 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:34:29 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:34:33 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=1/5
+2026/04/11 17:34:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:34:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:34:35 [calibrator] Camelot median=0.9973 ema=0.9974 spread=0.0027 samples=5/5
+2026/04/11 17:34:38 [swap] logs chan: current=0 peak_30s=9 cap=256
+2026/04/11 17:34:40 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:34:40 [cyclecache] rebuilt: 95785 cycles across 111 pools (7169.8ms)
+2026/04/11 17:34:41 [tickmap-skip] 1 V3 pools had empty bitmaps (no initialized ticks in ±25 word range)
+2026/04/11 17:34:48 [stats] pools=1566 edges=3132 live=3022 swaps=536 cached_cycles=95785
+2026/04/11 17:34:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:34:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:34:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:34:48 [calibrator] Camelot median=0.9965 ema=0.9971 spread=0.0018 samples=4/5
+2026/04/11 17:34:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:34:49 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:34:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:34:53 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:34:55 [cyclecache] rebuilt: 95367 cycles across 110 pools (7316.5ms)
+2026/04/11 17:35:03 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:35:04 [calibrator] Camelot median=0.9973 ema=0.9972 spread=0.0017 samples=4/5
+2026/04/11 17:35:05 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:35:05 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:35:05 [tickmap] 41415 ticks across 96/96 cycle pools
+2026/04/11 17:35:05 [multicall] v3pools=456 withPrice=449 withLiquidity=409
+2026/04/11 17:35:08 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:35:08 [swap] logs chan: current=0 peak_30s=5 cap=256
+2026/04/11 17:35:18 [stats] pools=1566 edges=3132 live=3022 swaps=599 cached_cycles=95367
+2026/04/11 17:35:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:35:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:35:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:35:19 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:35:19 [calibrator] Camelot median=0.9973 ema=0.9972 spread=0.0027 samples=5/5
+2026/04/11 17:35:19 [poolstore] sync done in 339ms — 1268 tokens, 1683 pools (1634 live)
+2026/04/11 17:35:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:35:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:35:23 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:35:25 [cyclecache] rebuilt: 96202 cycles across 112 pools (7078.5ms)
+2026/04/11 17:35:33 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:35:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=1/5
+2026/04/11 17:35:34 [calibrator] Camelot median=0.9973 ema=0.9972 spread=0.0018 samples=3/5
+2026/04/11 17:35:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:35:38 [swap] logs chan: current=0 peak_30s=14 cap=256
+2026/04/11 17:35:39 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:35:40 [cyclecache] rebuilt: 96441 cycles across 113 pools (7350.2ms)
+2026/04/11 17:35:48 [stats] pools=1566 edges=3132 live=3022 swaps=631 cached_cycles=96441
+2026/04/11 17:35:48 [gas] price=0.0200 gwei  txCost=$0.0270  minProfit=$0.0810 (3.0× cost, floor=$0.001)
+2026/04/11 17:35:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:35:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:35:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:35:48 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=4/5
+2026/04/11 17:35:49 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:35:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:35:49 [calibrator] Camelot median=0.9974 ema=0.9973 spread=0.1115 samples=5/5
+2026/04/11 17:35:55 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:36:03 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:36:03 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:36:04 [verify] pool verification pass done: 1505 verified / 61 failed / 0 errored in 5m15s
+2026/04/11 17:36:04 [verify]     36 × liquidity is zero (no active range)
+2026/04/11 17:36:04 [verify]      8 × getReserves failed: execution reverted
+2026/04/11 17:36:04 [verify]      4 × nonstandard tickSpacing 50 for fee 3000ppm (std=60)
+2026/04/11 17:36:04 [verify]      2 × tickSpacing call failed: <nil>
+2026/04/11 17:36:04 [verify]      2 × v4 hook 0x4440854b2d02c57a0dc5c58b7a884562d875c0c4 has swap-affecting permissions
+2026/04/11 17:36:04 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:36:04 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:36:08 [swap] logs chan: current=0 peak_30s=8 cap=256
+2026/04/11 17:36:10 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:36:18 [stats] pools=1566 edges=3132 live=3022 swaps=682 cached_cycles=96441
+2026/04/11 17:36:18 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:36:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:36:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:36:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:36:18 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0017 samples=4/5
+2026/04/11 17:36:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:36:19 [poolstore] sync done in 335ms — 1268 tokens, 1683 pools (1634 live)
+2026/04/11 17:36:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:36:25 [cyclecache] rebuilt: 96094 cycles across 112 pools (7180.7ms)
+2026/04/11 17:36:25 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:36:33 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0000 samples=3/5
+2026/04/11 17:36:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:36:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:36:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:36:38 [swap] logs chan: current=0 peak_30s=2 cap=256
+2026/04/11 17:36:40 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:36:40 [cyclecache] rebuilt: 96541 cycles across 113 pools (7204.0ms)
+2026/04/11 17:36:48 [stats] pools=1566 edges=3132 live=3022 swaps=699 cached_cycles=96541
+2026/04/11 17:36:48 [gas] price=0.0200 gwei  txCost=$0.0272  minProfit=$0.0815 (3.0× cost, floor=$0.001)
+2026/04/11 17:36:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:36:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:36:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:36:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:36:49 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0044 samples=5/5
+2026/04/11 17:36:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:36:53 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:36:55 [cyclecache] rebuilt: 96174 cycles across 112 pools (7108.8ms)
+2026/04/11 17:37:03 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:37:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:37:04 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=3/5
+2026/04/11 17:37:05 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:37:06 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:37:08 [swap] logs chan: current=0 peak_30s=1 cap=256
+2026/04/11 17:37:18 [stats] pools=1566 edges=3132 live=3022 swaps=728 cached_cycles=96174
+2026/04/11 17:37:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:37:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:37:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:37:19 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:37:19 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:37:19 [poolstore] sync done in 366ms — 1268 tokens, 1683 pools (1634 live)
+2026/04/11 17:37:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:37:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:37:21 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:37:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:37:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=1/5
+2026/04/11 17:37:34 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0000 samples=3/5
+2026/04/11 17:37:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:37:37 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:37:38 [swap] logs chan: current=0 peak_30s=8 cap=256
+2026/04/11 17:37:48 [stats] pools=1566 edges=3132 live=3022 swaps=751 cached_cycles=96174
+2026/04/11 17:37:48 [gas] price=0.0200 gwei  txCost=$0.0266  minProfit=$0.0798 (3.0× cost, floor=$0.001)
+2026/04/11 17:37:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:37:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:37:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:37:48 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:37:48 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:37:49 [calibrator] Camelot median=0.9974 ema=0.9973 spread=0.0075 samples=5/5
+2026/04/11 17:37:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:37:52 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:38:04 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:38:04 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:38:05 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:38:05 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0000 samples=3/5
+2026/04/11 17:38:07 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:38:08 [swap] logs chan: current=0 peak_30s=8 cap=256
+2026/04/11 17:38:18 [stats] pools=1566 edges=3132 live=3022 swaps=786 cached_cycles=96174
+2026/04/11 17:38:18 [gas] price=0.0200 gwei  txCost=$0.0272  minProfit=$0.0815 (3.0× cost, floor=$0.001)
+2026/04/11 17:38:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:38:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:38:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:38:19 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:38:19 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:38:19 [poolstore] sync done in 435ms — 1268 tokens, 1683 pools (1634 live)
+2026/04/11 17:38:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:38:23 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:38:33 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=1/5
+2026/04/11 17:38:33 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:38:34 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:38:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:38:38 [swap] logs chan: current=0 peak_30s=10 cap=256
+2026/04/11 17:38:39 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:38:48 [stats] pools=1566 edges=3132 live=3022 swaps=817 cached_cycles=96174
+2026/04/11 17:38:48 [gas] price=0.0200 gwei  txCost=$0.0271  minProfit=$0.0814 (3.0× cost, floor=$0.001)
+2026/04/11 17:38:48 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:38:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:38:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:38:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:38:48 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0075 samples=5/5
+2026/04/11 17:38:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:38:49 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:38:55 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:39:03 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:39:03 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=4/5
+2026/04/11 17:39:04 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:39:04 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:39:08 [swap] logs chan: current=0 peak_30s=8 cap=256
+2026/04/11 17:39:12 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:39:18 [stats] pools=1566 edges=3132 live=3022 swaps=851 cached_cycles=96174
+2026/04/11 17:39:18 [gas] price=0.0200 gwei  txCost=$0.0272  minProfit=$0.0815 (3.0× cost, floor=$0.001)
+2026/04/11 17:39:18 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:39:18 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:39:18 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:39:18 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:39:18 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:39:19 [poolstore] sync done in 343ms — 1268 tokens, 1683 pools (1634 live)
+2026/04/11 17:39:19 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0018 samples=3/5
+2026/04/11 17:39:19 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:39:26 [cyclecache] rebuilt: 96231 cycles across 113 pools (7487.0ms)
+2026/04/11 17:39:27 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:39:33 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:39:34 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=3/5
+2026/04/11 17:39:34 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0017 samples=4/5
+2026/04/11 17:39:34 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:39:38 [swap] logs chan: current=0 peak_30s=11 cap=256
+2026/04/11 17:39:42 [multicall] fallback: 0/7 pools rescued via direct call
+2026/04/11 17:39:48 [stats] pools=1566 edges=3132 live=3022 swaps=896 cached_cycles=96231
+2026/04/11 17:39:48 [calibrator] Sushi median=1.0000 ema=1.0000 spread=0.0000 samples=2/5
+2026/04/11 17:39:48 [yield-peg] wstETH/WETH pool=0x315fd6ac... trueRate=1.231496 ammRate=1.228249 div=26.37bps (underpriced) ~$264
+2026/04/11 17:39:48 [yield-peg] wstETH/WETH pool=0x5201f648... trueRate=1.231496 ammRate=1.012218 div=1780.58bps (underpriced) ~$17806
+2026/04/11 17:39:48 [yield-peg] wstETH/WETH pool=0x35218a1c... trueRate=1.231496 ammRate=1.230977 div=4.21bps (underpriced) ~$42
+2026/04/11 17:39:49 [calibrator] UniV2 median=1.0000 ema=1.0000 spread=0.0000 samples=5/5
+2026/04/11 17:39:49 [calibrator] Camelot median=0.9973 ema=0.9973 spread=0.0027 samples=5/5
+2026/04/11 17:39:49 [calibrator] Curve median=1.0000 ema=1.0000 spread=0.0000 samples=1/2
+2026/04/11 17:39:54 received shutdown signal
+2026/04/11 17:39:54 [bot] shutting down

@@ -1,0 +1,8 @@
+[profile.default]
+src = "contracts"
+out = "contracts/out"
+libs = []
+solc = "0.8.24"
+
+[rpc_endpoints]
+arbitrum = "https://arb1.arbitrum.io/rpc"

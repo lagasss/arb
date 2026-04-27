@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:www.geckoterminal.com)",
+      "WebFetch(domain:thegraph.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.balancer.fi)",
+      "WebFetch(domain:docs-v2.balancer.fi)",
+      "WebFetch(domain:docs.algebra.finance)",
+      "Read(//home/arbitrator/**)",
+      "Bash(sshpass -p 'Agadou11!' ssh -o StrictHostKeyChecking=no seb@209.172.45.63 \"echo connected && uname -a && docker --version 2>/dev/null && docker compose version 2>/dev/null || echo ''docker not installed''\")",
+      "Bash(sshpass -p 'Agadou11!' rsync -avz --progress -e \"ssh -o StrictHostKeyChecking=no\" /home/arbitrator/nitro/ seb@209.172.45.63:/home/arbitrator/nitro/)",
+      "Bash(sshpass -p:*)",
+      "Bash(curl -s -X POST https://arb1-sequencer.arbitrum.io/rpc -H \"Content-Type: application/json\" -d '{\"\"jsonrpc\"\":\"\"2.0\"\",\"\"method\"\":\"\"eth_blockNumber\"\",\"\"params\"\":[],\"\"id\"\":1}')",
+      "Bash(forge build:*)",
+      "Bash(forge test:*)",
+      "Bash(ssh -i /tmp/aws.pem arbitrator@16.59.141.64 'python3 -c \":*)",
+      "Bash(curl -s -X POST https://arb-mainnet.g.alchemy.com/v2/E0ASSpGbenMwsLFIfcr1- -H 'Content-Type: application/json' -d '{\"jsonrpc\":\"2.0\",\"method\":\"eth_blockNumber\",\"params\":[],\"id\":1}')",
+      "Bash(python3 -c \"import sys,json; print\\(f'Chain head: {int\\(json.load\\(sys.stdin\\)[\\\\\"result\\\\\"],16\\):,}'\\)\")",
+      "Bash(sshpass -f ~/.ssh/arbpass ssh -o StrictHostKeyChecking=no arbitrator@209.172.45.63 \"python3 -c \\\\\"import sqlite3; c=sqlite3.connect\\('arb.db'\\); cur=c.cursor\\(\\); cur.execute\\('SELECT COUNT\\(*\\), SUM\\(CASE WHEN success=1 THEN 1 ELSE 0 END\\) FROM arb_observations'\\); print\\(cur.fetchone\\(\\)\\)\\\\\" 2>&1 | head -20\")",
+      "Read(//root/.ssh/**)",
+      "Read(//tmp/**)",
+      "Bash(ssh seb@209.172.45.63 \"python3 -c \\\\\"import sqlite3; c = sqlite3.connect\\('/home/arbitrator/go/arb-bot/arb.db'\\); r = c.execute\\(\\\\\\\\\\\\\"SELECT sql FROM sqlite_master WHERE name='contract_ledger'\\\\\\\\\\\\\"\\).fetchone\\(\\); print\\(r[0] if r else 'NOT FOUND'\\)\\\\\" && echo --- && python3 -c \\\\\"import sqlite3; c = sqlite3.connect\\('/home/arbitrator/go/arb-bot/arb.db'\\); [print\\(row\\) for row in c.execute\\('SELECT * FROM contract_ledger LIMIT 5'\\).fetchall\\(\\)]\\\\\"\")",
+      "Bash(ssh seb@209.172.45.63 \"python3 -c \\\\\"import sqlite3; c = sqlite3.connect\\('/home/arbitrator/go/arb-bot/arb.db'\\); print\\('count:', c.execute\\('SELECT COUNT\\(*\\) FROM contract_ledger'\\).fetchone\\(\\)[0]\\); [print\\(r\\) for r in c.execute\\('SELECT DISTINCT kind FROM contract_ledger'\\).fetchall\\(\\)]\\\\\"\")",
+      "Bash(sshpass -f /home/arbitrator/.ssh/pass ssh -o StrictHostKeyChecking=no arbitrator@209.172.45.63 \"python3 -c \\\\\"import sqlite3; c=sqlite3.connect\\('arb.db'\\); cur=c.cursor\\(\\); cur.execute\\('SELECT * FROM competitor_arbs WHERE id=15870'\\); cols=[d[0] for d in cur.description]; row=cur.fetchone\\(\\); [print\\(f'{k}: {v}'\\) for k,v in zip\\(cols,row\\)]\\\\\"\")",
+      "Bash(curl -s 'https://api.github.com/repos/OffchainLabs/go-ethereum/git/trees/master?recursive=1' -H 'Accept: application/vnd.github.v3+json')",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://snapshot.arbitrum.foundation/arb1/2026-04-08-a3b0e3cf/.manifest.txt\" -o /tmp/manifest.txt)",
+      "Bash(curl -s -r 0-104857600 \"https://snapshot.arbitrum.foundation/arb1/2026-04-08-a3b0e3cf/pruned.tar.part0000\")",
+      "Bash(tar -t)",
+      "Read(//root/.claude/**)"
+    ],
+    "additionalDirectories": [
+      "/home/arbitrator/nitro/monitoring/grafana/provisioning",
+      "/tmp"
+    ]
+  }
+}

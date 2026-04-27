@@ -1,0 +1,8 @@
+2026/04/11 18:52:23 [bot] loaded 2 junk token(s) — will be excluded from cycles
+2026/04/11 18:52:23 [bot] token registry: 17 from config + 1258 rehydrated from DB = 1275 total
+2026/04/11 18:52:23 [bot] PancakeV3 dispatch: DEX_PANCAKE_V3 (8) — assumes contract has _swapPancakeV3 handler
+2026/04/11 18:52:23 [executor] submit client connected to sequencer: https://arb1-sequencer.arbitrum.io/rpc
+2026/04/11 18:52:23 [executor] simulation client connected to: https://arbitrum-mainnet.core.chainstack.com/3f4c4d6546df8aabd1d7a56baf76a18b
+2026/04/11 18:52:23 [bot] starting...
+2026/04/11 18:52:23 [bot] token registry: 1275 tokens loaded
+2026/04/11 18:52:23 [debug-http] listening on 127.0.0.1:6060 (loopback only)

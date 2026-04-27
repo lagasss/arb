@@ -1,0 +1,8 @@
+.vscode/sftp.json
+contracts/.env
+contracts/out/
+contracts/cache/
+.env
+node_modules/
+*/.env
+.vscode/*

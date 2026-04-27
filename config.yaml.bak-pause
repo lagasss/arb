@@ -1,0 +1,576 @@
+arbitrum_rpc: "wss://arbitrum-mainnet.core.chainstack.com/3f4c4d6546df8aabd1d7a56baf76a18b"
+arbscan_rpc: "wss://arbitrum-mainnet.core.chainstack.com/ad4b1860892b679699077f7598535766"  # dedicated Chainstack project — separate from arbitrum_rpc to avoid silent dedup on shared API key
+l1_rpc: "https://ethereum-rpc.publicnode.com"
+uniswap_api_key: "LqX_hC7lAhPCX-YmmTTa2pp6rFw4nVFRNYxBCZPsoU0"
+
+# Absolute path to the SQLite database shared by the bot and arbscan.
+db_path: "/home/arbitrator/go/arb-bot/arb.db"
+
+# ── CEX-DEX split-route bot (cmd/cexdex) ────────────────────────────────────
+# Runs as a separate binary alongside the main cyclic-arb bot.
+# Set enabled: true once SplitArb.sol is deployed and executor_contract is filled.
+cex_dex:
+  enabled: false
+
+  # Binance WebSocket combined stream endpoint.
+  binance_ws: "wss://stream.binance.com:9443/stream"
+
+  # Pairs to subscribe to for fair-value reference prices.
+  pairs: ["ETHUSDT", "ARBUSDT", "BTCUSDT"]
+
+  # Minimum spread between effective DEX price and Binance mid (bps).
+  # 15bps covers ~0.3% pool fees + slippage buffer. Raise to reduce tx count.
+  min_spread_bps: 15.0
+
+  # Maximum USD value to borrow per trade (actual size also capped at 5% of buy pool liquidity).
+  max_trade_usd: 50000
+
+  # Maximum number of pools in the split-sell leg.
+  max_sell_hops: 4
+
+  # Minimum net profit in USD (after estimated gas) to submit.
+  min_profit_usd: 2.0
+
+  # Estimated gas cost in USD for a split-arb tx (~800k gas at current prices).
+  gas_cost_usd: 0.50
+
+  # Milliseconds between opportunity scans. 500ms = twice per second.
+  scan_interval_ms: 500
+
+  # Minimum seconds between consecutive submissions.
+  cooldown_secs: 2
+
+  # Deployed SplitArb.sol address. Leave empty until contract is deployed.
+  executor_contract: ""
+
+wallet:
+  address: "0x612fb8be2a1f0fd904ca45e5bba46f11b35c2c57"
+  # private key loaded from ARB_BOT_PRIVKEY env var only
+
+pools:
+  min_tvl_usd: 0
+  min_volume_24h_usd: 0
+  # Hard TVL floor — applies to BOTH the filter-bypass paths (subgraph seeds,
+  # pinned pools, competitor-watcher auto-adds via ForceAdd) AND the discovery
+  # path (PoolCreated events via Add). The regular min_tvl_usd filter above is
+  # only consulted in Add, so subgraph seeds can sneak in arbitrarily tiny
+  # pools. Motivated by Unishop.ai ($580 TVL, 5-hop scam cycles) on 2026-04-11.
+  # 5000 catches the obvious pump-and-dump class without losing legitimate
+  # thin-TVL pools (most real pools with < $5k TVL have virtually no volume
+  # and produce no arb opportunities). Set to 0 to disable this hard floor.
+  # Lowered from 5000 → 3000 on 2026-04-12 to include ~21 more pools that
+  # passed the quality filter. The tick-count + volume/TVL filters still
+  # catch truly dead/scam pools.
+  absolute_min_tvl_usd: 3000
+
+  # Pool-quality composite filter — three independent signals that together
+  # catch low-quality pools the absolute TVL floor misses. Applied at
+  # registry add time (ForceAdd + Add), in the cycle cache rebuild filter
+  # (~15s guard), and in the hourly prune pass. Each check is input-gated
+  # so freshly-loaded pools without populated state pass through until the
+  # next pass. Rejected pools are logged with [quality-reject] in bot.log.
+  #
+  # min_tick_count: minimum initialized-tick count for V3/V4 pools. Real
+  # V3 pools have hundreds of ticks across the range; Unishop.ai had 25.
+  # Below 30 ticks means basically no LP diversity. 0 = disabled.
+  min_tick_count: 20
+
+  # high_fee_tier_min_tvl_usd: the 1% (10000 ppm) UniV3 fee tier is designed
+  # for exotic / volatile pairs. Legitimate 1% pools still attract $50k+
+  # capital because the high fee compensates IL risk; a 1% pool under this
+  # threshold is a pump-and-dump signature. Only applies when fee_ppm==10000.
+  # 0 = disabled.
+  high_fee_tier_min_tvl_usd: 50000
+
+  # min_volume_tvl_ratio: dead-pool floor. Real pools cycle 0.1-3x TVL
+  # daily in normal activity; below 1% (0.01) is effectively no flow, no
+  # price movement, no arb opportunities. Only applies when both TVL and
+  # volume are populated > 0. 0 = disabled.
+  # Lowered from 0.01 → 0.001 on 2026-04-12 03:00. 0.01 was pruning too
+  # aggressively during quiet hours (1535 → 208 pools). 0.001 (0.1% daily
+  # turnover) still catches truly dead pools while preserving temporarily
+  # quiet ones. The cycle cache also applies this check every ~15s so even
+  # if a pool is in the registry, it won't pollute cycles if it's dead.
+  min_volume_tvl_ratio: 0.001
+  prune_tvl_usd: 0
+  prune_volume_usd: 0
+  max_hops: 5
+  max_pool_tvl_usd: 0  # 0 = disabled. Large pools (e.g. WETH/USDC $1B TVL) still have
+                       # exploitable dislocations when large trades move price across ticks.
+  # Subgraph TVL/volume values above this are clamped to 0. Some indexers
+  # occasionally return $1e22 values when their price feed for an exotic token
+  # is busted. Default 1e12 ($1T) — anything above is clearly garbage.
+  sanity_max_tvl_usd: 1000000000000  # $1T
+
+  # ── Subgraph seeding ────────────────────────────────────────────────────────
+  # Fetches top pools by TVL at startup and refreshes TVL/volume metrics every 4h.
+  # Falls back to config seeds below if any subgraph is unreachable.
+  # Note: The Graph hosted service endpoints — update if migrated to decentralised network.
+  subgraph:
+    enabled: true
+    thegraph_api_key: "ab36a56013fc35d212ca373d1b467d0c"
+    # Subgraph IDs on The Graph decentralised network (Arbitrum One)
+    uniswap_v3_subgraph_id: "FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM"
+    # Note: V4 doesn't use a subgraph — TVL+volume come from Uniswap's GraphQL
+    # gateway, authenticated with the top-level `uniswap_api_key`. No config here.
+    camelot_v2_subgraph_id: "8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG"
+    camelot_v3_subgraph_id: "3utanEBA9nqMjPnuQP1vMCCys6enSM3EawBpKTVwnUw2"
+    sushiswap_v2_subgraph_id: "9tSS5FaePZnjmnXnSKCCqKVLAqA6eGg6jA2oRojsXUbP"  # Messari schema, indexes V2 pools
+    balancer_v2_subgraph_id: "98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS"
+    # curve_subgraph_id: covered by config seeds — subgraph schema incompatible
+    # ramses_v2_subgraph_id: schema incompatible (no pairs/pools entity)
+    ramses_v3_subgraph_id: "ATQTt3wRTgXy4canCh6t1yeczAz4ZuEkFQL2mrLXEMyQ"
+    pancakeswap_v3_subgraph_id: "https://api.studio.thegraph.com/query/45376/exchange-v3-arbitrum/version/latest"
+    # chronos_subgraph_id: indexers unavailable (abandoned)
+    # zyberswap_v3_subgraph_id: subgraph not found (abandoned)
+    min_tvl_usd: 50000     # skip pools below $200k TVL
+    limit_per_dex: 1000       # top 50 per DEX = up to 150 pools total
+    refresh_hours: 4        # refresh TVL/volume metrics every 4 hours
+
+  # ── Pinned pools (always present, protected from TVL pruning) ───────────────
+  # Each address is resolved on-chain at startup: factory→DEX type, token0/1
+  # via token0()/token1(), fee via fee() (V3) or getAmountOut calibration (V2).
+  # Pinned pools survive in the registry even if their TVL drops to zero.
+  # To add a pool: paste its address. To remove: delete the line.
+  pinned_pools:
+    - "0xdf04fa6ee5e2dcf73f7edd0aa3a5f7f9a4a5f445"  # CAPX/USDC 0.01% — competitor bot farms this heavily
+    - "0xc31e54c7a869b9fcbecc14363cf510d1c41fa443"  # WETH/USDC.e 0.05%
+    - "0xc6962004f452be9203591991d15f6b388e09e8d0"  # WETH/USDC 0.05%
+    - "0x641c00a822e8b671738d32a431a4fb6074e5c79d"  # WETH/USDT 0.05%
+    - "0x2f5e87c9312fa29aed5c179e456625d79015299c"  # WBTC/WETH 0.05%
+    - "0x35218a1cbac5bbc3e57fd9bd38219d37571b3537"  # wstETH/WETH 0.01%
+    - "0x92c63d0e701caae670c9415d91c474f686298f00"  # WETH/ARB 0.30% (was incorrectly tagged 0.05%)
+    - "0x84652bb2539513baf36e225c930fdd8eaa63ce27"  # WETH/USDC.e
+    - "0x97b192198d164c2a1834295e302b713bc32c8f1d"  # WETH/USDT (verified via factory.getPair)
+    - "0x1c31fb3359357f6436565ccb3e982bc6bf4189ae"  # USDC.e/USDT (stable-stable)
+    - "0x905dfcd5649217c42684f23958568e533c711aa3"  # WETH/USDC.e
+    - "0xcb0e5bfa72bbb4d16ab5aa0c60601c438f04b4ad"  # WETH/USDT
+    - "0x515e252b2b5c22b4b2b6df66c2ebeea871aa4d69"  # WBTC/WETH
+    - "0xc473e2aee3441bf9240be85eb122abb059a3b57c"  # WETH/USDC 0.3%
+    - "0x17c14d2c404d167802b16c450d3c99f88f2c4f4d"  # WETH/USDC.e 0.3%
+    - "0xb0f6ca40411360c03d41c5ffc5f179b8403cdcf8"  # ARB/USDC 0.05% (was 0xb0f6ca40...a5d6e3526c95572b — typo, that address has no bytecode on chain)
+    - "0xac70bd92f89e6739b3a08db9b6081a923912f73d"  # WBTC/USDC.e 0.05%
+    - "0x8e295789c9465487074a65b1ae9ce0351172393f"  # USDC/USDC.e 0.01%
+    - "0xa53d33e543a3831c49e10cf5f97f12bc754f77c8"  # USDC/USDC.e 0.0001% (RamsesV3 CL) — used in WBTC 4-hop cycles
+    - "0xe461f84c3fe6bcdd1162eb0ef4284f3bb6e4cad3"  # PENDLE/WETH (Camelot V3)
+    - "0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f"  # WETH/ARB (was mislabelled WETH/USDT)
+    - "0x96059759c6492fb4e8a9777b65f307f2c811a34f"  # WBTC/WETH
+    - "0x138c115bdcc8709d7f782ecc29dfb3829907d74b"  # ARB/USDC
+    - "0x80a9ae39310abf666a87c743d6ebbd0e8c42158e"  # WETH/GMX 1%
+    - "0x135e49cc315fed87f989e072ee11132686cf84f3"  # USDC/GMX 0.3%
+    - "0xc91b7b39bbb2c733f0e7459348fd0c80259c8471"  # GNS/WETH 0.3%
+    - "0x09ba302a3f5ad2bf8853266e271b005a5b3716fe"  # WETH/rETH 0.05%
+    - "0xb7e50106a5bd3cf21af210a755f9c8740890a8c9"  # MAGIC/WETH
+    - "0xf3eb87c1f6020982173c908e7eb31aa66c1f0296"  # WETH/USDC 0.05% — #2 most-arbed pool on Arbitrum
+    - "0x0e4831319a50228b9e450861297ab92dee15b44f"  # WBTC/USDC 0.05% (was incorrectly tagged 0.3%)
+    - "0x5969efdde3cf5c0d9a88ae51e47d721096a97203"  # WBTC/USDT 0.05% (was 0xfa7191d2...0e633200 — typo, that address has no bytecode on chain)
+    - "0x889af944e95788f770983062b13b5a52e367029b"  # WBTC/tBTC 0.01% — used in competitor tBTC cycles
+    - "0xcb198a55e2a88841e855be4eacaad99422416b33"  # tBTC/WETH 0.05% — used in competitor tBTC cycles
+    - "0x7fcdc35463e3770c2fb992716cd070b63540b947"  # WETH/USDC 0.01%  ← #1 most-arbed pool
+    - "0xd9e2a1a61b6e61b275cec326465d417e52c1b95c"  # WETH/USDC 0.05%  ← #3 most-arbed pool
+    - "0x389938cf14be379217570d8e4619e51fbdafaa21"  # WETH/USDT 0.01%
+    - "0xaa89ba37d1975ae294974ebb33db9d4b5324f2f2"  # WBTC/USDT 0.05%
+    - "0x7f90122bf0700f9e7e1f688fe926940e8839f353"  # Curve 2pool A=2000 fee=1bps
+    - "0x32df62dc3aed2cd6224193052ce665dc18165841"  # RDNT/WETH 80/20
+
+
+strategy:
+  # Throttle: minimum log-price change on a pool before its cycles are rescored.
+  # 0.0005 ≈ 0.05% move. Skips CPU work on tiny high-frequency swaps that don't
+  # change profitability. Set to 0 to disable (rescore on every swap).
+  min_price_delta: 0.0005
+
+  # Reject cycles whose log-profit exceeds this. Values above ~5% are almost
+  # certainly stale price data, not real opportunities.
+  lp_sanity_cap: 0.05
+
+  # Reject simulated profit above this USD value. Guards against simulator bugs.
+  max_profit_usd_cap: 50000
+
+  # Maximum trade size as a fraction of the shallowest pool's TVL.
+  # 0.15 = 15% — keeps price impact manageable.
+  tvl_trade_cap_fraction: 0.15
+
+  # Shallow-pool sizing override. When a cycle includes any pool with TVL <
+  # shallow_pool_tvl_usd, the cap for THAT pool tightens to
+  # shallow_pool_trade_fraction × TVL instead of tvl_trade_cap_fraction × TVL.
+  # Reason: shallow V3 pools have non-linear tick-crossing slippage — a $5–10k
+  # trade through a $66k pool can move price ≥50 bps, which is enough to flip
+  # a "+40 bps" fast-eval cycle into a "-50 bps" buildHops re-sim. The two
+  # ARB pools (0xb791…6e37 ARB/USDT $66k and 0xcda5…dad8 ARB/USDC.e $934k)
+  # were responsible for every "build hops: cycle unprofitable" reject in the
+  # 2026-04-11 forensics. Defaults: 200_000 / 0.03 (3% of TVL on shallow pools,
+  # roughly $6k max on a $200k pool, $2k max on a $66k pool).
+  shallow_pool_tvl_usd: 200000
+  shallow_pool_trade_fraction: 0.03
+
+  # Minimum seconds between consecutive on-chain submissions.
+  # 2s on Arbitrum is enough to avoid sequencer spam while not blocking opportunities.
+  submit_cooldown_secs: 2
+
+  # How often (seconds) the cycle cache DFS rebuild runs.
+  # Bumped to 60s — rebuild takes ~20-27s at current settings (833k cycles),
+  # giving ~30s headroom for spikes. The cycle cache is still fresh enough
+  # because swap-event-driven fastEval re-scores cached cycles inline.
+  cycle_rebuild_secs: 60
+
+  # Best pools kept per (sourceToken, destToken) pair during adjacency building.
+  # The cycle cache groups edges by (DEX, fee_tier) tuples and keeps the top N
+  # by log weight per destination (with ties at the cutoff also kept). For hot
+  # pairs like USDC/USDT, the deepest pool sits at 100ppm (UniV3 0.01% with
+  # $25B TVL); the 8ppm UniV4 and 25ppm CamelotV3 pools have slightly better
+  # rates and would consume the first 2 slots. With N=5 we cover 5 of the 6
+  # major USDC/USDT venues — every important fee tier × DEX combination. The
+  # per-source-token edge count is still capped at max_edges_per_node so the
+  # DFS branching factor doesn't blow up. Validated 2026-04-11.
+  # Bumped 2026-04-12: server has 16 cores and rebuild was ~4s at previous
+  # settings (headroom to ~10s within the 15s interval). More edges = more
+  # cross-DEX arbitrage paths discovered, especially for mid-cap tokens.
+  max_dex_per_dest: 7
+
+  # Max outgoing edges per token node after per-DEX filtering.
+  # 60 edges ≈ ~8-10 destinations × 7 DEXes — covers all major + mid-cap tokens.
+  max_edges_per_node: 60
+
+  # Seconds without a swap/multicall update before a pool's edges are zeroed.
+  pool_staleness_secs: 900  # 15 min — generous buffer for Chainstack RPS limits causing multicall gaps
+
+  # How many hours of arb observations to keep in SQLite.
+  arb_log_retention_hours: 72
+
+  # Maximum rows in arb_observations (oldest pruned first, 0 = unlimited).
+  arb_log_max_rows: 500000
+
+  # On-chain minProfit divisor passed to the executor contract.
+  # 1 = require only 1 wei profit (recommended — avoids "profit below minimum"
+  # reverts when price moves between simulation and SendTransaction).
+  # Increase only if simulation accuracy improves enough to trust a tighter floor.
+  contract_min_profit_divisor: 1
+
+  # Skip the eth_call dry-run for cycles whose estimated profit meets or exceeds
+  # this USD threshold. The contract reverts safely on-chain if the opportunity
+  # has vanished — the gas cost of a failed tx (~$0.01) is far less than a missed
+  # $5+ arb. Set to 0 to always simulate (conservative default).
+  # 2026-04-12 speed optimization: smoketest confirmed our per-hop sim matches
+  # on-chain quoters at 0 bps delta for PancakeV3/SushiV3/UniV3/all V2 forks.
+  # The sim is RELIABLE; the 42/51 reverts are due to state-drift (200-400ms
+  # latency), not sim bugs. Skipping eth_call saves 39ms per candidate and
+  # lets us broadcast within a single Arbitrum block.
+  #
+  # At 82% miss rate: 18% × $5 avg profit = $0.90/attempt revenue.
+  # Cost: 82% × $0.025 gas per reverted tx = $0.021/attempt.
+  # ROI: 43x — massively net positive even with high revert rate.
+  #
+  # skip_sim_above_usd: any cycle with profit ≥ $1 skips the dry-run.
+  # skip_sim_above_bps: any cycle with margin ≥ 100 bps skips the dry-run.
+  # Either condition triggers skip. Set both to 0 to always simulate.
+  skip_sim_above_usd: 1.0
+  skip_sim_above_bps: 100
+
+  # Minimum simulated profit margin in basis points to submit a cycle.
+  # With multi-tick V3 simulation the go_sim is accurate — but the simulator
+  # is called twice (once in optimalAmountIn during fastEvalCycles, once in
+  # buildHops during executor.Submit) and the snapshot fix only stops state
+  # mutation between them; it doesn't fix imprecision in the simulator itself
+  # or actual on-chain price moves between detect and submit. The 2026-04-11
+  # forensics showed sim_bps=38–42 cycles consistently failing buildHops by
+  # 45–48 bps — i.e. anything thinner than ~80 bps margin is statistically
+  # noise. Setting 100 keeps a comfortable safety buffer above that observed
+  # divergence. Lower (e.g. 50) once the snapshot fix has been validated and
+  # we want to recover thin-margin cycles.
+  # 2026-04-11: validated the snapshot fix eliminates the "cycle unprofitable:
+  # last hop short" reject class entirely (11 → 0 in a controlled A/B at
+  # min_sim_profit_bps=5). With the divergence between optimalAmountIn and
+  # buildHops gone, we no longer need a 100 bps safety buffer to absorb
+  # ~80 bps of inter-eval drift. Set to 25 — wide enough to skip the truly
+  # marginal cycles whose profit might evaporate due to genuine on-chain
+  # price moves between detect and submit (vs the simulator-internal
+  # divergence we just fixed), narrow enough to keep capturing the bulk of
+  # opportunities. Lower toward 10 if we observe a healthy submission cadence
+  # with no new revert classes; raise toward 50 if reverts return.
+  min_sim_profit_bps: 25
+
+  # Per-hop slippage tolerance (bps) passed to the executor as amountOutMin
+  # on each swap leg. If a pool moves more than this between detection and
+  # on-chain execution the swap reverts at the hop level rather than at the
+  # flash-loan repayment step. The last hop is additionally floored at amountIn
+  # so the contract can always repay Balancer regardless of slippage.
+  # 200 = 2% — wide enough to absorb normal between-block drift on volatile
+  # pools without burning a submission slot. Tighten toward 20–50 once the bot
+  # is stable and we trust the simulator end-to-end. Default if unset: 50.
+  slippage_bps: 200
+
+  # Top-K cap on candidates the serial submission loop will attempt per swap
+  # event. Hard upper bound on the dispatcher's wall-clock budget — protects
+  # the swap-listener goroutine from starvation when a volatile burst produces
+  # hundreds of profitable variants of the same arb cluster. Combined with
+  # the prefix-dedup the realistic worst case is K × ~50ms per eth_call.
+  fast_eval_max_submits_per_swap: 8
+
+  # When true, every sim-reject runs executor.Diagnose and emits a per-hop
+  # forensic line to bot.log (go_sim out, on-chain re-sim out, fail point).
+  # Costs an extra eth_call per failure — leave OFF in steady state, ON only
+  # while investigating a recurring revert pattern.
+  diagnose_sim_rejects: true
+
+  # Auto-disable scam/honeypot pools that repeatedly cause pool-attributable
+  # sim-rejects. When a pool reaches auto_disable_reject_threshold rejects
+  # within auto_disable_window_secs, the bot calls DisablePool() which sets
+  # the in-memory p.Disabled flag AND persists to the SQLite pools.disabled
+  # column (survives restarts). The next cycle cache rebuild (~15s) drops
+  # every cycle touching the disabled pool.
+  #
+  # Covers errors where parseFailedHop can attribute a specific hop:
+  #   - "hop N simulation returned 0" (buildHopsOpt)
+  #   - "execution reverted: hop N: ..." (on-chain revert)
+  # Excluded: 429s, health gates, cooldowns, "cycle unprofitable" (not
+  # attributable to a single pool).
+  #
+  # To manually re-enable an auto-disabled pool:
+  #   sqlite3 arb.db "UPDATE pools SET disabled=0 WHERE address='0x...'"
+  # followed by a bot restart (the in-memory flag doesn't clear on its own).
+  #
+  # Thresholds: 5 rejects in 1h catches the Unishop.ai class (observed 8/h
+  # on 2026-04-11) while leaving ample headroom for legitimate pools that
+  # produce transient rejects during volatility. Tune higher if legitimate
+  # pools start getting disabled; tune lower if scam pools slip through.
+  auto_disable_enabled: true
+  auto_disable_reject_threshold: 5
+  auto_disable_window_secs: 3600
+
+  # Competitor pool watcher: minimum profit (USD) of a competitor_arbs row that
+  # triggers an on-chain resolution of its pools. Unknown pools are added to the
+  # live registry and cycle cache automatically. Set to 0 to disable.
+  competitor_watch_min_profit_usd: 0.005  # discover pools from any profitable competitor trade
+
+  # Gas safety multiplier: profit must be ≥ N × estimated tx gas cost to pass the
+  # dynamic minimum threshold. 3.0 means a $0.025 gas cost requires $0.075 profit
+  # minimum — preventing $0.003 trades from consuming the submission slot for 2s.
+  # The config trading.min_profit_usd acts as an absolute floor regardless.
+  gas_safety_mult: 3.0
+
+  # Absolute hard floor on log-profit (bps). Cycles below this are always rejected
+  # regardless of the dynamic floor. Acts as a safety net for misconfiguration.
+  # The dynamic_lp_floor block below is the primary threshold — set this low.
+  min_cycle_lp_bps: 2.0
+
+  # Dynamic LP floor: per-cycle minimum log-profit computed from hop composition.
+  # Effective floor = Σ_hops(base_bps[dex] × tvl_scale × vol_mult × gas_mult) + latency.
+  dynamic_lp_floor:
+    # Base buffer per hop by DEX type (bps). Reflects how sharply each pool type
+    # can move between detection and on-chain inclusion.
+    base_bps_curve: 2.0          # Curve StableSwap: pegged assets, near-zero drift
+    base_bps_v2: 6.0             # V2 constant-product (Sushi, UniV2, Camelot): smooth curve
+    base_bps_v3: 12.0            # V3 concentrated liquidity: tick crossings cause sharp moves
+    base_bps_camelot_v3: 14.0   # CamelotV3/ZyberV3: V3 math + dynamic fees add uncertainty
+
+    # TVL scaling: pools thinner than tvl_ref_usd get a larger buffer.
+    # scale = sqrt(tvl_ref_usd / pool_tvl), clamped to [tvl_scale_min, tvl_scale_max].
+    # A $50K pool is ~3× more sensitive to competing swaps than a $500K pool.
+    tvl_ref_usd: 500000.0
+    tvl_scale_min: 0.5   # deep pools (>$2M TVL) capped at 0.5× base
+    tvl_scale_max: 4.0   # thin pools (<$31K TVL) capped at 4× base
+
+    # Volatility class multipliers. Applied per-hop based on the token pair.
+    # stable/stable (USDC/USDT): barely drifts between blocks.
+    # small-cap (ARB, GMX, LINK, …): can move 0.3–1% per block on active days.
+    vol_stable_mult: 0.3
+    vol_volatile_mult: 1.5
+
+    # Fixed per-cycle overhead added regardless of composition (bps).
+    # Covers sequencer scheduling variance and mempool delay.
+    latency_overhead_bps: 5.0
+
+    # Gas price thresholds for congestion multiplier.
+    # Elevated gas implies more blocks between detection and inclusion.
+    # Above gas_elevated_gwei: all per-hop buffers × 1.2.
+    # Above gas_high_gwei:     all per-hop buffers × 1.5.
+    gas_elevated_gwei: 0.05
+    gas_high_gwei: 0.20
+
+  # Fee assumed for Algebra (CamelotV3 / ZyberV3) pools that report fee_bps=0
+  # because they use dynamic fees not returned by globalState(). Without this,
+  # the simulator treats them as 0-fee and overestimates profit, producing cycles
+  # that always revert on-chain. 25 bps = 0.25% is the typical Algebra dynamic fee.
+  camelot_v3_default_fee_bps: 10  # lowered from 25 — actual dynamic fees are typically 5-15 bps on major pairs
+
+trading:
+  # Direct Arbitrum sequencer endpoint for lowest-latency tx submission.
+  # Only accepts eth_sendRawTransaction. Defaults to arb1-sequencer.arbitrum.io/rpc if empty.
+  # Benchmarked 2026-04-12: Ankr=149ms, BlastAPI=148ms, Alchemy=153ms,
+  # Chainstack=247ms (degraded), Sequencer=174ms. All hit the same ~140ms
+  # Montreal→US-East floor. Ankr is fastest + no API key needed.
+  sequencer_rpc: "https://arb1.arbitrum.io/rpc"
+  simulation_rpc: "https://arbitrum-mainnet.core.chainstack.com/3f4c4d6546df8aabd1d7a56baf76a18b"  # Alchemy for eth_call simulations
+  tick_data_rpc: "https://arbitrum-mainnet.core.chainstack.com/3f4c4d6546df8aabd1d7a56baf76a18b"  # Chainstack for bulk tick data — separate from Alchemy to avoid 429s
+  min_profit_usd: 0.001
+  flash_loan_amount_usd: 2000000  # hard cap; actual size bounded by 15% of shallowest pool TVL
+  # Balancer Vault on Arbitrum
+  balancer_vault: "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+  # Aave V3 Pool on Arbitrum — used as a fallback flash loan source when
+  # Balancer doesn't hold the token and no V3 pool is available. Charges
+  # 0.05% (5 bps) premium. Set empty to disable.
+  # Official Aave V3 deployment: https://docs.aave.com/developers/deployed-contracts/v3-mainnet/arbitrum
+  aave_pool_address: "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+  # Redeployed 2026-04-12 with V3 flash + Aave V3 flash entry points.
+  # Entry points: execute() (Balancer), executeV3Flash() (V3 pool), executeAaveFlash() (Aave).
+  # Previous: 0x6D808C4670a50f7dE224791e1B2A98C590157AeA (Balancer-only)
+  executor_contract: "0x73aF65fe487AC4D8b2fb7DC420c15913E652e9Aa"
+
+  # True iff executor_contract is the redeployed ArbitrageExecutor.sol that
+  # contains _swapPancakeV3 (DEX_PANCAKE_V3=8). Flipping to true against the
+  # OLD contract sends every PancakeV3 hop into the contract's V2 fallback
+  # branch and breaks even the cycles that currently work — keep paired with
+  # the executor_contract address above.
+  executor_supports_pancake_v3: true
+
+  # Read-only HTTP introspection server bound to 127.0.0.1:<port> (loopback
+  # only — never exposed externally). Powers the /test slash command's
+  # T2-debug tests by exposing the bot's in-memory state (pool reserves,
+  # V3 ticks, cycle cache, executor caches, health timestamps) that SQLite
+  # intentionally doesn't persist. Set to 0 to disable. Endpoints:
+  #   /debug/health, /debug/pools, /debug/pools/{addr}, /debug/cycles,
+  #   /debug/cycle-cache/stats, /debug/executor, /debug/swap-listener,
+  #   /debug/config
+  debug_http_port: 6060
+  # Per-pool tick freshness gate. Cycles whose V3/V4 edges have tick data older
+  # than this are skipped before simulation. Default 30s — gives 2 fetch rounds
+  # of buffer (fetcher runs every ~10-12s) so transient slowdowns don't trigger
+  # false-stale flicker on the dashboard or block trading on healthy pools.
+  tick_pool_max_age_sec: 30
+  # Eager tick re-fetch threshold: when a V3/V4 Swap event lands, the swap
+  # listener compares the post-swap tick to the tick captured at the last
+  # FetchTickMaps pass (TickAtFetch on the Pool). If the absolute distance
+  # is at least this many tickSpacing units, the listener fires an immediate
+  # single-pool tick map refresh — bypassing the 5s periodic sweep so the
+  # multi-tick simulator never runs on a bitmap whose active range has
+  # drifted off-screen during a fast move. Lower values = more RPC load
+  # (one tick-map call per qualifying swap), higher values = staler bitmaps
+  # during volatility. Default: 8 spacings ≈ ⅓ of the ±25-word fetch radius.
+  # Set to 0 to disable eager re-fetch entirely (rely only on the 5s sweep).
+  tick_eager_refetch_spacings: 8
+  # Per-pool cooldown (milliseconds) for the eager re-fetch path. After a
+  # pool fires an eager re-fetch, suppress further fires for that pool for
+  # this many ms. Stops a single hot pool from saturating the RPC during
+  # bursty markets — the periodic 5s sweep + the next eager fire after
+  # cooldown still cover it. Default: 750 ms ≈ 3 Arbitrum blocks.
+  # Also reused as the cooldown for the Algebra dynamic-fee refresh path
+  # (CamelotV3 / ZyberV3 globalState() re-read after each swap).
+  tick_eager_refetch_cooldown_ms: 750
+
+monitoring:
+  influxdb_url: "http://localhost:8086"
+  influxdb_token: ""
+  influxdb_org: "arb-bot"
+  influxdb_bucket: "arb"
+  telegram_token: ""
+  telegram_chat_id: ""
+
+# DEX factory addresses on Arbitrum
+factories:
+  uniswap_v3:   "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+  sushiswap:    "0xc35DADB65012eC5796536bD9864eD8773aBc74C4"
+  sushiswap_v3: "0x1af415a1EbA07a4986a52B6f2e7dE7003D82231e"
+  pancakeswap_v3: "0x0BFbCF9fa4f9C56b0f40a671Ad40E0805A091865"
+  # FIXED 2026-04-12: old addresses (0xaaa16c… / 0xaa2cd7… / 0x6dd3fb…) were
+  # dead — zero bytecode on-chain. Verified via eth_getCode.
+  ramses_v3:    "0xd0019e86edB35E1fedaaB03aED5c3c60f115d28b"  # docs.ramses.exchange, 3423 bytes bytecode
+  ramses_v2:    "0xADd32480630A16dfAcEe6eeFcB3ab2181449Dc3B"  # docs.ramses.exchange
+  camelot_v3:   "0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B"  # docs.camelot.exchange AMMv3 AlgebraFactory, 14031 bytes
+  camelot:      "0x6EcCab422D763aC031210895C81787E87B43A652"
+  # DISABLED 2026-04-12: TraderJoe V2 uses Liquidity Book (discrete price bins),
+  # not x*y=k. Our simulator routes TJoe through UniswapV2Sim which is the wrong
+  # math — any TJoe cycle would produce incorrect sim outputs. Disabled until a
+  # LiquidityBookSim is implemented. The two existing TJoe pools ($300/$116 TVL)
+  # are already excluded by the $5k absolute TVL floor.
+  # trader_joe: "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6"
+
+tokens:
+  - address: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+    symbol: "USDC.e"
+    decimals: 6
+  - address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+    symbol: "USDC"
+    decimals: 6
+  - address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
+    symbol: "USDT"
+    decimals: 6
+  - address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
+    symbol: "WETH"
+    decimals: 18
+  - address: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
+    symbol: "WBTC"
+    decimals: 8
+  - address: "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40"
+    symbol: "tBTC"
+    decimals: 18
+  - address: "0x5979D7b546E38E414F7E9822514be443A4800529"
+    symbol: "wstETH"
+    decimals: 18
+  - address: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8"
+    symbol: "rETH"
+    decimals: 18
+  - address: "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34"
+    symbol: "USDe"
+    decimals: 18
+  - address: "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2"
+    symbol: "sUSDe"
+    decimals: 18
+  - address: "0x724dc807b04555b71ed48a6896b6F41593b8C637"
+    symbol: "aArbUSDC"
+    decimals: 6
+  - address: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8"
+    symbol: "aArbWETH"
+    decimals: 18
+  - address: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620"
+    symbol: "aArbUSDT"
+    decimals: 6
+  - address: "0xba5DdD1f9d7F570dc94a51479a000E3BCE967196"
+    symbol: "AAVE"
+    decimals: 18
+  - address: "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4"
+    symbol: "LINK"
+    decimals: 18
+  - address: "0x912CE59144191C1204E64559FE8253a0e49E6548"
+    symbol: "ARB"
+    decimals: 18
+  - address: "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0A"
+    symbol: "GMX"
+    decimals: 18
+  - address: "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
+    symbol: "WBTC"
+    decimals: 8
+
+yield_monitoring:
+  min_divergence_bps: 10    # global floor; per-pair min_divergence_bps overrides lower
+  min_profit_usd: 5         # $5 minimum — wstETH arb at 2 bps on $50k = $10
+  pairs:
+    # NOTE: lido_wsteth removed — bridged wstETH on Arbitrum is a plain ERC-20,
+    # stEthPerToken() is not available. wstETH arb here is purely AMM-to-AMM (the cycle cache covers it).
+
+    # Chainlink oracle — wstETH/ETH feed on Arbitrum (returns ETH per wstETH, 18 decimals)
+    # wstETH accumulates staking yield; AMM price lags the oracle → recurring arb
+    # Typical divergence: 1-3 bps. Profitable at >3 bps with large flash loan (~$500k).
+    - base_address:     "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"  # WETH
+      wrapper_address:  "0x5979D7b546E38E414F7E9822514be443A4800529"  # wstETH
+      protocol: "chainlink"
+      rate_contract:    "0xb523AE262D20A936BC152e6023996e46FDC2A95D"  # Chainlink wstETH/ETH Arbitrum
+      max_stale_secs:   86400  # wstETH/ETH feed heartbeat is 24h
+      min_divergence_bps: 3  # log when > 3 bps — break-even ~$15 at $50k, actionable at $150k+
+
+    # Aave V3 — aTokens accrue interest every block; rate readable from AavePool contract
+    - base_address:    "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"  # USDC
+      wrapper_address: "0x724dc807b04555b71ed48a6896b6F41593b8C637"  # aArbUSDC
+      protocol: "aave_v3"
+      rate_contract:   "0x794a61358D6845594F94dc1DB02A252b5b4814aD"  # Aave V3 Pool Arbitrum
+    - base_address:    "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"  # WETH
+      wrapper_address: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8"  # aArbWETH
+      protocol: "aave_v3"
+      rate_contract:   "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+    - base_address:    "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"  # USDT
+      wrapper_address: "0x6ab707Aca953eDAeFBc4fD23bA73294241490620"  # aArbUSDT
+      protocol: "aave_v3"
+      rate_contract:   "0x794a61358D6845594F94dc1DB02A252b5b4814aD"
+
+    # NOTE: sUSDe erc4626 removed — bridged sUSDe on Arbitrum is not a redeemable vault.
+    # Mainnet sUSDe at 0x9D39A5DE30e57443BfF2A8307A4256c8797A3497 supports convertToAssets.

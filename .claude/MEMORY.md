@@ -1,0 +1,49 @@
+- [Seb — user profile](user_seb.md) — Seb, experienced dev building Go arb bot on Arbitrum, Montreal servers with fiber
+- [Config params for all tunables](feedback_config_params.md) — Every hardcoded threshold/interval must be a config.yaml param with comment
+- [Compile locally on the server](feedback_compile_remote.md) — Sessions run on arb1 itself; just `go build` from the repo root, no scp/ssh wrapper
+- [Work directly on the server](feedback_server_only.md) — Harness runs on arb1 (was 209.172.45.63); skip sshpass/rsync/scp wrappers in older notes
+- [Cycle paths not Bellman-Ford](feedback_cycle_paths.md) — Bot uses pre-cached cycle paths (CycleCache), not Bellman-Ford for real-time detection
+- [Arbitrum Flash Loan Arb Bot](project_arb_bot.md) — Full project context: Go+Solidity, Balancer flash loans, cycle detection, scaffold already built
+- [Long-tail pool coverage (post-live TODO)](project_longtail_pool_coverage.md) — Extend pool discovery for niche-token dislocations (e.g. fUSDC from competitor_arbs 16106); 3 implementation options, not a hard pre-live blocker
+- [Pending Setup Checklist](project_checklist.md) — All TODOs before bot goes live: wallet, contract deploy, node sync, monitoring
+- [Server Security TODOs](project_security.md) — Security hardening tasks (SSH, firewall, wallet separation) to do before live trading
+- [V4 native-ETH executor blocker](project_v4_native_eth_blocker.md) — HARD blocker before pause_trading=false; Phase A landed (sim correct), Phase B/C/D pending — V4-ETH PoolKey would silently revert every swap on chain
+- [PancakeV2 executor dispatch](project_pancakev2_executor.md) — HARD blocker before pause_trading=false; factory 0x02a84c1b… mapped sim-only, needs dedicated router entry + verified V2 ABI compatibility or new _swapPancakeV2 dispatch before submitting
+- [Lean specialised contract fleet](project_lean_contract_fleet.md) — In progress: V3FlashMini/V4Mini/MixedV3V4Executor live; OwnCapitalMini (340k, no-flash 2-3 hop USDC/WETH) still the main gap to match competitor 15191's 257k-gas layer
+- [PancakeV3 calldata fix](project_pancakev3_calldata_bug.md) — Original 0x0F2dACc1… routed Pancake hops via UniV3 layout (had `deadline`); fixed in redeploy 0x56483EEE… on 2026-04-11 with no-deadline _swapPancakeV3 handler; flag must stay paired with address
+- [End-to-end test plan](project_test_plan.md) — Categorized list of every smoke/integration test the bot needs (rpc, pools, state, routers, cycles, sim, contract, submit, health, db, forensics, e2e, tick); invoked by /test [category|all]
+- [Tick reliability + cmd/ticktest](project_tick_reliability.md) — 2026-04-18 tick bitmap hardening + test binary; /debug/tick-health + TicksFetchOK split of candRejectTickStale into 4 sub-counters; 19/19 PASS baseline
+- [Incremental tick-liquidity deltas](project_tick_liquidity_delta.md) — 2026-04-19 Mint/Burn/ModifyLiquidity payloads decoded + applied in-memory via Pool.ApplyTickLiquidityDelta; closes SIM_PHANTOM gap on ts=1 1bp pools; counter tick_delta_applied on /debug/pools
+- [V4Mini executor](project_v4_mini.md) — LIVE at 0x615ba27d (2026-04-19); V4-only 2-5 hop, ~300k gas, ETH-native, HookRegistry-gated; routing auto-picks via qualifyForV4Mini
+- [MixedV3V4Executor](project_mixed_v3v4_executor.md) — 2026-04-19 deployed at 0x448494C9F384CCBF56F39c5BcA963c513c3204e6; 2-5 hop mixed V3+V4 cycles (one PoolManager.unlock wraps both V4 pm.swap and V3 pool.swap); closes V4_HANDLER class on cycles like UniV4-UniV4-UniV3
+- [V4 Hook Registry + classifier](project_hook_registry.md) — 2026-04-19 HookRegistry at 0x1249139d… shared by new V4Mini 0x15b8a136… + MixedV3V4Executor 0x8fe29c50…; classifier auto-whitelists safe hooks, `/hook approve` for manual review
+- [Debug HTTP introspection server](reference_debug_http.md) — Bot exposes /debug/* on 127.0.0.1:6060 (loopback) for live in-memory state: pools, cycles, health, executor caches, swap listener — required by all T2-debug tests
+- [V4 pool stranded-in-tokens bug](project_v4_pool_stranded_bug.md) — 2026-04-19 fix: V4PoolIDsMissingTickSpacing now UNIONs v4_pool_tokens, rescuing API-only pools the Initialize-log backfill never saw
+- [Token registry rehydrate fix](project_token_rehydrate_bug.md) — LoadPools was silently dropping 50+ pools per restart because the registry was only seeded from cfg.Tokens (17) not from the DB (1269); fixed by adding DB.LoadTokens and rehydrating at startup. Pool count jumped 213 → 1721. Includes the LoadPools-deadlock landmine (Rows cursor + MaxOpenConns=1)
+- [Smoketest binary at cmd/smoketest](project_test_plan.md) — INFRA-2 implemented; runs sim and contract per-DEX probes by reading bot /debug/pools, mirrors the bot's `executor_supports_pancake_v3` flag via SetExecutorSupportsPancakeV3 (mandatory for any standalone tool that imports internal)
+- [Simulator verification status](project_sim_verification.md) — Per-DEX sim accuracy: all 12 active DEXes verified at 0bps via on-chain quoters/state checks, 2026-04-12
+- [Multi-source flash loans](project_flash_sources.md) — Balancer(0fee)→V3flash(5-100bps)→Aave(5bps) priority; contract 0x73aF65fe…; FlashSourceSelector in flashsource.go
+- [Borrowable token filter](project_borrowable_filter.md) — Cycle cache filters start tokens by flash-loan eligibility across ALL sources (Balancer=70 + V3=165 + Aave=20). RunBorrowableRefreshLoop runs every 1h.
+- [Multicall + tick-fetcher split](project_multicall_split.md) — watchNewBlocks no longer bundles slow tick fetching with fast multicall; watchTickMapsLoop now runs independently. Eliminates `health: multicall stale` rejects (was 15% of observations).
+- [Multicall speedup + sb_lag fix](project_multicall_speedup.md) — 2026-04-19 parallel batches in doMulticallParallel, skip tickSpacing/weights/A/fee on per-block path, stamp pools at post-call `latest`. Eliminated `sb_lag=3b > max=1b` regate-reject class.
+- [RPC endpoints](reference_rpcs.md) — 3 RPCs: tx submission, live tracking (Chainlink), historical (Alchemy)
+- [Bot start command](reference_bot_start.md) — nohup ./bot with ARB_BOT_PRIVKEY env var, logs to bot.log
+- [Trade forensics in SQLite](reference_trade_forensics.md) — our_trades table in arb.db: per-hop go_sim, revert_reason, pool_states_json; sqlite3 CLI or python3 both work
+- [Session 2026-04-12 changes](project_2026_04_12_session.md) — Pool quality filter, speed opts, sim fixes (Camelot fee 10x, Solidly), snapshot fix, dead factories, quoter wiring, multicall locking, multi-source flash loans, T11 invariants
+- [Tick-count filter TVL bypass](project_tick_count_bypass_tvl.md) — 2026-04-19 new config `min_tick_count_bypass_tvl_usd` (default $1M, set to $10k) admits niche pairs like tBTC/USDC $27k ticks=5; cycles through tBTC/USDC 0→618
+- [Dead-pool TVL exemption](project_dead_pool_tvl_exempt.md) — volume/TVL dead-pool floor was rejecting $1.36B stable pools (ratio 0.00026 < 0.001); added min_volume_tvl_ratio_exempt_tvl_usd ($50M). Cycles went 461k→1.29M, pools 186→224
+- [Contract ledger in SQLite](project_contract_ledger.md) — contract_ledger table tracks all deployed/planned contracts with trade type routing and status
+- [Gas cost must be per-contract](feedback_gas_per_contract.md) — Profit calcs must use per-contract gas estimates; routing decision before profitability check
+- [gas_safety_mult = 1.0](feedback_gas_safety_mult.md) — Target profit ≥ 1× gas cost (breakeven), not 3× — compete at the sub-$0.05 arb layer that dominates Arbitrum MEV
+- [Stop adding comments](feedback_no_comments.md) — Don't add code comments; they drift from reality and mislead
+- [Bot process architecture](project_bot_processes.md) — All goroutines in cmd/bot: data pipeline, scoring, execution, logging
+- [Arbscan process architecture](project_arbscan_processes.md) — All goroutines in cmd/arbscan: competitor observation, classification, comparison
+- [Config.yaml structure](reference_config.md) — Map of config blocks, key interactions (test_mode + major, pinned vs major pools, merge logic)
+- [Cycle detection triggers](reference_cycle_detection.md) — 4 trigger paths (swap-event, cross-pool, block-scoring, inline refresh) with cadence + accuracy failure modes
+- [V3/V4 tick data](reference_tick_data.md) — tick bitmap fetch (V3 direct vs V4 StateView), storage, staleness gates, known accuracy hazards
+- [DEX particularities](reference_dex_particularities.md) — per-DEX math/fee/router/callback quirks; any drift = wrong sim
+- [Fee extraction sources](reference_fee_sources.md) — where each DEX's fee comes from, dynamic fee refresh, calibration, drift signatures
+- [Executor contracts reference](reference_contracts.md) — dispatch tables, Hop encoding, gas estimates, routing decision (complements contract_ledger table)
+- [Only verified pools and tokens](feedback_verified_only.md) — Hard rule: never trade through a pool or token without all metrics blockchain-confirmed
+- [Verified ≠ once — means fresh NOW](feedback_verified_means_fresh.md) — Extends verified-only: every sim-dependent field must be currently fresh at scoring time, not stale-but-verified
+- [Web dashboard (arb-dashboard)](reference_dashboard.md) — :8080 single-page dashboard, embedded HTML, SQLite reader + /debug proxy, systemd user service, all tabs/APIs/gotchas documented
