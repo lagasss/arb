@@ -6,3 +6,22 @@ contracts/cache/
 node_modules/
 */.env
 .vscode/*
+
+# Build artifacts
+arb-dashboard
+bot
+arbscan
+smoketest
+
+# SQLite runtime state
+arb.db*
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+bot.log
+arbscan.log
+
+# Local tmp
+/tmp/*
